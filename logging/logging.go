@@ -26,14 +26,12 @@ func NewLogger() *Logger {
 			WarnPrefix:    ":warning:",
 			RunningPrefix: ":zap:",
 			AskPrefix:     ":interrobang:",
-			UI:            wlog.New(os.Stdin, kitlog.NewStdlibAdapter(logger), os.Stderr),
+			UI:            wlog.New(os.Stdin, os.Stdout, os.Stderr),
 		},
 		KitLog: logger,
 	}
 
 	log.SetOutput(kitlog.NewStdlibAdapter(l.KitLog))
-	log.Print("Logger initialized")
-
 	return l
 }
 
