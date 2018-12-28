@@ -10,6 +10,14 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "UT"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
   digest = "1:e921c3d4324ffdcb4fd39d5f47a832f2112d44731a5f21d8ae0ccfe82e608711"
   name = "github.com/daviddengcn/go-colortext"
   packages = ["."]
@@ -175,6 +183,14 @@
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "UT"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:75d51eeab0df85a3cea9e1297ccd3183b20a10cb4b48c753d8ec8d113cc14250"
   name = "github.com/prometheus/client_golang"
   packages = [
@@ -225,6 +241,17 @@
   pruneopts = "UT"
   revision = "e09e9389d85d8492d313d73d1469c029e710623f"
   version = "v0.1.4"
+
+[[projects]]
+  digest = "1:c40d65817cdd41fac9aa7af8bed56927bb2d6d47e4fea566a74880f5c2b1c41e"
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "require",
+  ]
+  pruneopts = "UT"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [[projects]]
   digest = "1:777e729b475d3895c7229552aa10076f0d177daf37c0a72258006d046d329960"
@@ -365,6 +392,14 @@
   revision = "df014850f6dee74ba2fc94874043a9f3f75fbfd8"
   version = "v1.17.0"
 
+[[projects]]
+  digest = "1:d8483668c9a3542585dc222d8a8aafb66d21bd153b9ea61c8e795a07d64488d0"
+  name = "gopkg.in/dixonwille/wlog.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "76a8811f69dff5d130c6b5f0342451b0beb52f37"
+  version = "v2.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
@@ -389,6 +424,8 @@
     "github.com/piotrkowalczuk/promgrpc",
     "github.com/pkg/errors",
     "github.com/soheilhy/cmux",
+    "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/require",
     "go.uber.org/zap",
     "go.uber.org/zap/zapcore",
     "golang.org/x/net/context",
@@ -399,6 +436,7 @@
     "google.golang.org/grpc/grpclog",
     "google.golang.org/grpc/reflection",
     "google.golang.org/grpc/status",
+    "gopkg.in/dixonwille/wlog.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
