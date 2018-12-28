@@ -13,10 +13,6 @@ type Logger struct{
 	KitLog kitlog.Logger
 }
 
-func init() {
-	log.SetOutput(kitlog.NewStdlibAdapter(l.KitLog))
-}
-
 func NewLogger() *Logger {
 	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stdout))
 	l := &Logger{
