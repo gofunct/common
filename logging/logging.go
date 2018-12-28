@@ -49,6 +49,8 @@ func (l *Logger) FatalUI(args ...interface{}) {
 			l.UI.Log(string(x))
 		case bool:
 			l.UI.Log(strconv.FormatBool(x))
+		case byte:
+			l.UI.Log(string(x))
 		default:
 			log.Fatalf("%s", "fatal: ", args)
 		}
@@ -59,13 +61,16 @@ func (l *Logger) InfoUI(args ...interface{}) {
 	for _, arg := range args {
 		switch x := arg.(type) {
 		case string:
-			l.Info(x)
+			l.UI.Info(x)
 		case error:
-			l.Info(x.Error())
+			l.UI.Info(x.Error())
 		case int:
-			l.Info(string(x))
+			l.UI.Info(string(x))
 		case bool:
-			l.Info(strconv.FormatBool(x))
+			l.UI.Info(strconv.FormatBool(x))
+		case byte:
+			l.UI.Info(string(x))
+
 		default:
 			log.Printf("%s", "info: ", args)
 		}
@@ -83,6 +88,8 @@ func (l *Logger) ErrorUI(args ...interface{}) {
 			l.UI.Error(string(x))
 		case bool:
 			l.UI.Error(strconv.FormatBool(x))
+		case byte:
+			l.UI.Error(string(x))
 		default:
 			log.Fatalf("%s", "error: ", args)
 		}
@@ -100,6 +107,8 @@ func (l *Logger) OutputUI(args ...interface{}) {
 			l.UI.Output(string(x))
 		case bool:
 			l.UI.Output(strconv.FormatBool(x))
+		case byte:
+			l.UI.Output(string(x))
 		default:
 			log.Printf("%s", "output: ", args)
 		}
@@ -117,6 +126,8 @@ func (l *Logger) RunningUI(args ...interface{}) {
 			l.UI.Running(string(x))
 		case bool:
 			l.UI.Running(strconv.FormatBool(x))
+		case byte:
+			l.UI.Running(string(x))
 		default:
 			log.Printf("%s", "running: ", args)
 		}
@@ -135,6 +146,8 @@ func (l *Logger) WarnUI(args ...interface{}) {
 			l.UI.Warn(string(x))
 		case bool:
 			l.UI.Warn(strconv.FormatBool(x))
+		case byte:
+			l.UI.Warn(string(x))
 		default:
 			log.Printf("%s", "warning: ", args)
 		}
@@ -152,6 +165,8 @@ func (l *Logger) SuccessUI(args ...interface{}) {
 			l.UI.Success(string(x))
 		case bool:
 			l.UI.Success(strconv.FormatBool(x))
+		case byte:
+			l.UI.Success(string(x))
 		default:
 			log.Printf("%s", "success: ", args)
 		}
@@ -170,6 +185,8 @@ func (l *Logger) DebugUI(args ...interface{}) {
 			l.UI.Info(string(x))
 		case bool:
 			l.UI.Info(strconv.FormatBool(x))
+		case byte:
+			l.UI.Info(string(x))
 		default:
 			log.Printf("%s", "debug: ", args)
 		}
