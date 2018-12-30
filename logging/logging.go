@@ -3,22 +3,13 @@ package logging
 import (
 	"fmt"
 	"github.com/dixonwille/wlog"
-	kitlog "github.com/go-kit/kit/log"
 	"github.com/gofunct/common/io"
 	"github.com/kyokomi/emoji"
-	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"log"
 	"os"
 	"time"
-)
-
-
-var (
-	noColor = os.Getenv("TERM") == "dumb" ||
-		(!isatty.IsTerminal(os.Stdout.Fd()) && !isatty.IsCygwinTerminal(os.Stdout.Fd()))
 )
 
 var ui = wlog.New(os.Stdin, os.Stdout, os.Stderr)
@@ -36,25 +27,22 @@ var prefix = &wlog.PrefixUI{
 }
 
 
-type Logger struct{
+type Messenger struct{
 	UI 		wlog.UI
-	KitLog kitlog.Logger
 }
 
-func NewLogger() *Logger {
-	logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(os.Stdout))
-	l := &Logger{
+func NewMessenger() *Messenger {
+	m := &Messenger{
 		UI: prefix,
-		KitLog: logger,
 	}
+	m.AddColor()
 
-	log.SetOutput(kitlog.NewStdlibAdapter(l.KitLog))
-	return l
+	return m
 }
 
 
-func (l *Logger) AddColor() {
-		l.UI = wlog.AddColor(wlog.Green, wlog.Red, wlog.BrightBlue, wlog.Blue, wlog.Yellow, wlog.BrightMagenta, wlog.Yellow, wlog.BrightGreen, wlog.BrightRed, l.UI)
+func (m *Messenger) AddColor() {
+		m.UI = wlog.AddColor(wlog.Green, wlog.Red, wlog.BrightBlue, wlog.Blue, wlog.Yellow, wlog.BrightMagenta, wlog.Yellow, wlog.BrightGreen, wlog.BrightRed, l.UI)
 }
 
 

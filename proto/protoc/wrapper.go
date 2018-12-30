@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/gofunct/common/cmenu"
 	"github.com/gofunct/common/files"
+	"github.com/gofunct/common/logging"
 	"os"
 	"path/filepath"
 
@@ -27,6 +28,7 @@ type wrapperImpl struct {
 	execer   exec.Interface
 	toolRepo tool.Repository
 	rootDir  files.RootDir
+	messenger logging.Messenger
 }
 
 // NewWrapper creates a new Wrapper instance.
@@ -42,15 +44,15 @@ func NewWrapper(cfg *Config, fs afero.Fs, execer exec.Interface, ui cmenu.Menu, 
 }
 
 func (e *wrapperImpl) Exec(ctx context.Context) (err error) {
-	e.ui.Section("Execute protoc")
+	e.messenger.UI.Info("Execute protoc")
 
-	e.ui.Subsection("Install plugins")
+	e.messenger.UI.Info("Install plugins")
 	err = errors.WithStack(e.installPlugins(ctx))
 	if err != nil {
 		return
 	}
 
-	e.ui.Subsection("Execute protoc")
+	e.messenger.UI.Info("Execute protoc")
 	err = errors.WithStack(e.execProtocAll(ctx))
 
 	return
@@ -71,11 +73,11 @@ func (e *wrapperImpl) execProtocAll(ctx context.Context) error {
 		err = e.execProtoc(ctx, path)
 		relPath, _ := filepath.Rel(e.rootDir.String(), path)
 		if err == nil {
-			e.ui.ItemSuccess(relPath)
+			e.messenger.UI.Success(relPath)
 		} else {
 			zap.L().Error("failed to execute protoc", zap.Error(err))
 			errs = append(errs, err)
-			e.ui.ItemFailure(relPath, err)
+			e.messenger.UI.Error(relPath + " " + err.Error())
 		}
 	}
 

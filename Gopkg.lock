@@ -42,6 +42,22 @@
   version = "v2.0.0"
 
 [[projects]]
+  digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
+  name = "github.com/fatih/color"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
+  version = "v1.7.0"
+
+[[projects]]
+  digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
+  name = "github.com/fsnotify/fsnotify"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
+  version = "v1.4.7"
+
+[[projects]]
   digest = "1:3c4c08c15ef4e018a5d50fdab6a2485d54f97d8ee82acefc2367a9d86289bfee"
   name = "github.com/go-kit/kit"
   packages = ["log"]
@@ -126,9 +142,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:23b17cb48c8aef4826c24151f52b75e7011f3ef2d34a40ed9b3e259cd4be43e5"
+  digest = "1:95ce41f5f1d4fba49840c6e12e2a00eda2868177f5880cdf67a5a65ab66492de"
   name = "github.com/google/wire"
   packages = [
+    ".",
     "cmd/wire",
     "internal/wire",
   ]
@@ -164,6 +181,25 @@
   pruneopts = "UT"
   revision = "92583770e3f01b09a0d3e9bdf64321d8bebd48f2"
   version = "v1.4.1"
+
+[[projects]]
+  digest = "1:c0d19ab64b32ce9fe5cf4ddceba78d5bc9807f0016db6b1183599da3dcc24d10"
+  name = "github.com/hashicorp/hcl"
+  packages = [
+    ".",
+    "hcl/ast",
+    "hcl/parser",
+    "hcl/printer",
+    "hcl/scanner",
+    "hcl/strconv",
+    "hcl/token",
+    "json/parser",
+    "json/scanner",
+    "json/token",
+  ]
+  pruneopts = "UT"
+  revision = "8cb6e5b959231cc1119e43259c4a608f9c51a241"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -209,6 +245,46 @@
   version = "v1.0"
 
 [[projects]]
+  digest = "1:9be74b6bfcec2a9ceee4706e872ec0e9d78ded57408d5fbb52b1a4ca4db2a703"
+  name = "github.com/izumin5210/clig"
+  packages = ["pkg/clib"]
+  pruneopts = "UT"
+  revision = "2e6c66ccd558d58f233f56f674a13642f9b55e2c"
+  version = "v0.2.0"
+
+[[projects]]
+  digest = "1:73f66df8b109dbe6f319603500cbd5644a705b4ad5edb6a82e6e8427a0d54650"
+  name = "github.com/izumin5210/gex"
+  packages = [
+    ".",
+    "pkg/manager",
+    "pkg/manager/dep",
+    "pkg/manager/mod",
+    "pkg/tool",
+  ]
+  pruneopts = "UT"
+  revision = "9d0db8e87c4593d6bff9cf2bb6ad6db1e2f46316"
+  version = "v0.4.4"
+
+[[projects]]
+  digest = "1:1d6dadd87658293dfc5999260163c031ddbd5e5eaaa1ec8e567e457ecf4cf43d"
+  name = "github.com/izumin5210/grapi"
+  packages = [
+    "pkg/cli",
+    "pkg/gencmd",
+    "pkg/gencmd/util",
+    "pkg/grapicmd",
+    "pkg/grapicmd/util/fs",
+    "pkg/protoc",
+    "pkg/svcgen",
+    "pkg/svcgen/params",
+    "pkg/svcgen/template",
+  ]
+  pruneopts = "UT"
+  revision = "2518d77403918203a90541bf5edb02cf6f8c607a"
+  version = "v0.3.2"
+
+[[projects]]
   branch = "master"
   digest = "1:446f04b6b59c2cfacf8e9784c431afda6708d72a7a09eaefb2ab96d2b9cf8536"
   name = "github.com/jessevdk/go-assets"
@@ -231,6 +307,14 @@
   pruneopts = "UT"
   revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
   version = "v1.4.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:fd97437fbb6b7dce04132cf06775bd258cce305c44add58eb55ca86c6c325160"
+  name = "github.com/jinzhu/inflection"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
   digest = "1:395909746961a45abfc8b4a566a53cb6335e580768eae7d29d4a196b2bed2d07"
@@ -269,6 +353,14 @@
   pruneopts = "UT"
   revision = "3cd7d0b1b03c19b7a9a01a515038c46cf6de6ae0"
   version = "v2.0.0"
+
+[[projects]]
+  digest = "1:c568d7727aa262c32bdf8a3f7db83614f7af0ed661474b24588de635c20024c7"
+  name = "github.com/magiconair/properties"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c2353362d570a7bfa228149c62842019201cfb71"
+  version = "v1.8.0"
 
 [[projects]]
   digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
@@ -319,6 +411,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
+  version = "v1.1.2"
+
+[[projects]]
   digest = "1:450b7623b185031f3a456801155c8320209f75d0d4c4e633c6b1e59d44d6e392"
   name = "github.com/opentracing/opentracing-go"
   packages = [
@@ -329,6 +429,14 @@
   pruneopts = "UT"
   revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
   version = "v1.0.2"
+
+[[projects]]
+  digest = "1:95741de3af260a92cc5c7f3f3061e85273f5a81b5db20d4bd68da74bd521675e"
+  name = "github.com/pelletier/go-toml"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c01d1270ff3e442a8a57cddc1c92dc1138598194"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:af8a8ebc265737680e1d86246f90e96d8ce0908bff6a21fbc3ce272cf6480804"
@@ -399,6 +507,30 @@
   revision = "1dc9a6cbc91aacc3e8b2d63db4d2e957a5394ac4"
 
 [[projects]]
+  branch = "master"
+  digest = "1:efa124a0ca36a35cc1a1b472cb0fa2be1e7d9fd1db0f8bc9a042e42e4c6405aa"
+  name = "github.com/serenize/snaker"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a683aaf2d516deecd70cad0c72e3ca773ecfcef0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:68cecd4c1137f77dfa2db1f13a0ceef2b5606d6b69d66fa69f7df1b2f2fe9afc"
+  name = "github.com/shurcooL/httpfs"
+  packages = ["vfsutil"]
+  pruneopts = "UT"
+  revision = "74dc9339e414ad069a8d04bba7e7aafd08043a25"
+
+[[projects]]
+  branch = "master"
+  digest = "1:98450c86949b8cdc4637b80c1c686ca955e503d3fbae9296d1f49c532895d281"
+  name = "github.com/shurcooL/vfsgen"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6a9ea43bcacdf716a5c1b38efff722c07adf0069"
+
+[[projects]]
   digest = "1:30e06e6d62a1d694e3cdbff29d8a9a96022e05a487d0c6eaf0ef898965ef28fb"
   name = "github.com/soheilhy/cmux"
   packages = ["."]
@@ -418,6 +550,14 @@
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:08d65904057412fc0270fc4812a1c90c594186819243160dc779a402d4b6d0bc"
+  name = "github.com/spf13/cast"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "8c9545af88b134710ab1cd196795e7f2388358d7"
+  version = "v1.3.0"
+
+[[projects]]
   digest = "1:645cabccbb4fa8aab25a956cbcbdf6a6845ca736b2c64e197ca7cbb9d210b939"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -426,12 +566,28 @@
   version = "v0.0.3"
 
 [[projects]]
+  digest = "1:68ea4e23713989dc20b1bded5d9da2c5f9be14ff9885beef481848edd18c26cb"
+  name = "github.com/spf13/jwalterweatherman"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "4a4406e478ca629068e7768fc33f3f044173c0a6"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:c1b1102241e7f645bc8e0c22ae352e8f0dc6484b6cb4d132fa9f24174e0119e2"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = "UT"
   revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
   version = "v1.0.3"
+
+[[projects]]
+  digest = "1:de37e343c64582d7026bf8ab6ac5b22a72eac54f3a57020db31524affed9f423"
+  name = "github.com/spf13/viper"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6d33b5a963d922d182c91e8a1c88d81fd150cfd4"
+  version = "v1.3.1"
 
 [[projects]]
   digest = "1:d4093bdfb1d5d808bd9c61e42121711a077b5094de160ef4d68303604a8c659d"
@@ -454,6 +610,14 @@
   pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
+
+[[projects]]
+  branch = "master"
+  digest = "1:1e52cd770971c1f625650971d6c6f1f34669aa314e8dfd246fe3349b70a5304f"
+  name = "github.com/tcnksm/go-input"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "548a7d7a8ee8fcb3d013fae6acf857da56165975"
 
 [[projects]]
   digest = "1:36b287dd08aa04dd11b6f8a2c3c57423b6ca101de3974f6b012f1b9c884f25ce"
@@ -493,6 +657,14 @@
   pruneopts = "UT"
   revision = "ff33455a0e382e8a81d14dd7c922020b6b5e7982"
   version = "v1.9.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:38f553aff0273ad6f367cb0a0f8b6eecbaef8dc6cb8b50e57b6a81c1d5b1e332"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  pruneopts = "UT"
+  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
 
 [[projects]]
   branch = "master"
@@ -543,9 +715,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9652da56be8fe4998e79e36be6b9d30fe4fd4aacb73ecf0d9b3a33228189dc7e"
+  digest = "1:3d5e79e10549fd9119cbefd614b6d351ef5bd0be2f2b103a4199788e784cbc68"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows",
+  ]
   pruneopts = "UT"
   revision = "b4a75ba826a64a70990f11a225237acd6ef35c9f"
 
@@ -736,6 +911,7 @@
     "github.com/gofunct/bingen",
     "github.com/golang/mock/mockgen",
     "github.com/google/go-cmp/cmp",
+    "github.com/google/wire",
     "github.com/google/wire/cmd/wire",
     "github.com/grpc-ecosystem/go-grpc-middleware",
     "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap",
@@ -743,7 +919,16 @@
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/haya14busa/reviewdog/cmd/reviewdog",
     "github.com/iancoleman/strcase",
+    "github.com/izumin5210/gex/pkg/tool",
+    "github.com/izumin5210/grapi/pkg/cli",
+    "github.com/izumin5210/grapi/pkg/gencmd",
+    "github.com/izumin5210/grapi/pkg/grapicmd",
+    "github.com/izumin5210/grapi/pkg/grapicmd/util/fs",
+    "github.com/izumin5210/grapi/pkg/protoc",
+    "github.com/izumin5210/grapi/pkg/svcgen",
+    "github.com/izumin5210/grapi/pkg/svcgen/template",
     "github.com/jessevdk/go-assets-builder",
+    "github.com/jinzhu/inflection",
     "github.com/kisielk/errcheck",
     "github.com/kyokomi/emoji",
     "github.com/mattn/go-colorable",
@@ -752,9 +937,14 @@
     "github.com/opentracing/opentracing-go",
     "github.com/piotrkowalczuk/promgrpc",
     "github.com/pkg/errors",
+    "github.com/serenize/snaker",
+    "github.com/shurcooL/httpfs/vfsutil",
+    "github.com/shurcooL/vfsgen",
     "github.com/soheilhy/cmux",
     "github.com/spf13/afero",
     "github.com/spf13/cobra",
+    "github.com/spf13/pflag",
+    "github.com/spf13/viper",
     "github.com/srvc/wraperr/cmd/wraperr",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",

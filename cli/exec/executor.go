@@ -4,7 +4,6 @@ package exec
 import (
 	"bytes"
 	"context"
-	"io"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -12,15 +11,17 @@ import (
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	ioimpl "github.com/gofunct/common/io"
+	"io"
 	)
 
 // NewExecutor creates a new Executor instance.
-func NewExecutor(io io.IO) Executor {
+func NewExecutor(io ioimpl.IO) Executor {
 	return &executor{io: io}
 }
 
 type executor struct {
-	io io.IO
+	io ioimpl.IO
 }
 
 func (e *executor) Exec(ctx context.Context, name string, opts ...Option) (out []byte, err error) {
