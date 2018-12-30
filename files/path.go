@@ -1,4 +1,4 @@
-package clib
+package files
 
 import "path/filepath"
 

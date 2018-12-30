@@ -1,4 +1,6 @@
-PATH := ${PWD}/bin:${PATH}
+package templates
+
+var TemplateMakefile = MustCreateTemplate("makefile", `PATH := ${PWD}/bin:${PATH}
 export PATH
 
 .DEFAULT_GOAL := all
@@ -9,7 +11,7 @@ BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%SZ')
 GO_BUILD_FLAGS := -v
 GO_TEST_FLAGS := -v -timeout 2m
 GO_COVER_FLAGS := -coverprofile coverage.txt -covermode atomic
-SRC_FILES := $(shell go list -f '{{range .GoFiles}}{{printf "%s/%s\n" $$.Dir .}}{{end}}' ./...)
+SRC_FILES := $(shell go list -f {{"'{{range .GoFiles}}{{printf \"%s/%s\\n\" $$.Dir .}}{{end}}'"}} ./...)
 
 XC_ARCH := 386 amd64
 XC_OS := darwin linux windows
@@ -40,7 +42,7 @@ $(NAME)-package: $(NAME)
 		$(LDFLAGS) \
 		-os="$(XC_OS)" \
 		-arch="$(XC_ARCH)" \
-		-output="$(OUT_DIR)/$(NAME)_{{.OS}}_{{.Arch}}" \
+		-output="$(OUT_DIR)/$(NAME)_{{"{{.OS}}_{{.Arch}}"}}" \
 		$(1)
 
 $(eval GENERATED_BINS += $(OUT))
@@ -91,4 +93,4 @@ test:
 .PHONY: cover
 cover:
 	go test $(GO_TEST_FLAGS) $(GO_COVER_FLAGS) ./...
-
+`)

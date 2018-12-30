@@ -102,22 +102,6 @@
   version = "v0.2.0"
 
 [[projects]]
-  digest = "1:63ede27834b468648817fb80cfb95d40abfc61341f89cb7a0d6779b6aa955425"
-  name = "github.com/google/go-github"
-  packages = ["github"]
-  pruneopts = "UT"
-  revision = "a5cb647b1fac8ba77e1cf25af2f9526658ab63e3"
-  version = "v21.0.0"
-
-[[projects]]
-  digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
-  name = "github.com/google/go-querystring"
-  packages = ["query"]
-  pruneopts = "UT"
-  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
-  version = "v1.0.0"
-
-[[projects]]
   digest = "1:36dd8e238bae7715a72dd3e0193a2fa71318b69e2bb5f4f454d8a0c114444b28"
   name = "github.com/grpc-ecosystem/go-grpc-middleware"
   packages = [
@@ -145,33 +129,6 @@
   pruneopts = "UT"
   revision = "92583770e3f01b09a0d3e9bdf64321d8bebd48f2"
   version = "v1.4.1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:20427ddaa8e0ba0904a08f909495bbbd5d7d0a8a8b201cfd3df076fb4381ff55"
-  name = "github.com/haya14busa/errorformat"
-  packages = [
-    ".",
-    "fmts",
-  ]
-  pruneopts = "UT"
-  revision = "689b7d67b7a82a9cae3d8bfcfa0f6f4b5790b88a"
-
-[[projects]]
-  digest = "1:46bea7432a2d8918f6b45be6b34138804d91c046d99a0b568c37f999d8acfad0"
-  name = "github.com/haya14busa/reviewdog"
-  packages = [
-    ".",
-    "cienv",
-    "cmd/reviewdog",
-    "diff",
-    "doghouse",
-    "doghouse/client",
-    "project",
-  ]
-  pruneopts = "UT"
-  revision = "ffb00ef78fd3e05f042505e8aaaa290919ce4d5a"
-  version = "0.9.11"
 
 [[projects]]
   branch = "master"
@@ -220,14 +177,6 @@
   pruneopts = "UT"
   revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
   version = "v0.0.4"
-
-[[projects]]
-  digest = "1:7efe48dea4db6b35dcc15e15394b627247e5b3fb814242de986b746ba8e0abf0"
-  name = "github.com/mattn/go-shellwords"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "02e3cf038dcea8290e44424da473dd12be796a8a"
-  version = "v1.0.3"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -353,17 +302,6 @@
   version = "v1.0.3"
 
 [[projects]]
-  digest = "1:d4093bdfb1d5d808bd9c61e42121711a077b5094de160ef4d68303604a8c659d"
-  name = "github.com/srvc/wraperr"
-  packages = [
-    ".",
-    "cmd/wraperr",
-  ]
-  pruneopts = "UT"
-  revision = "f6aeb1dc7dbd5421be3f411578f512eb6f6d3e07"
-  version = "v0.2.0"
-
-[[projects]]
   digest = "1:c40d65817cdd41fac9aa7af8bed56927bb2d6d47e4fea566a74880f5c2b1c41e"
   name = "github.com/stretchr/testify"
   packages = [
@@ -373,14 +311,6 @@
   pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
-
-[[projects]]
-  digest = "1:36b287dd08aa04dd11b6f8a2c3c57423b6ca101de3974f6b012f1b9c884f25ce"
-  name = "github.com/xanzy/go-gitlab"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f9a0483fdce3b36f669898c887a63ef08c845fe3"
-  version = "v0.12.2"
 
 [[projects]]
   digest = "1:777e729b475d3895c7229552aa10076f0d177daf37c0a72258006d046d329960"
@@ -415,22 +345,10 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:395763139fd6f101dd123c1b124d8c4ae614f37b09690a8675e9d523dbb2557f"
-  name = "golang.org/x/lint"
-  packages = [
-    ".",
-    "golint",
-  ]
-  pruneopts = "UT"
-  revision = "8f45f776aaf18cebc8d65861cc70c33c60471952"
-
-[[projects]]
-  branch = "master"
-  digest = "1:8ecb828bb550a8c6b7d75b8261a42c369461311616ebe5451966d067f5f993bf"
+  digest = "1:89a0cb976397aa9157a45bb2b896d0bcd07ee095ac975e0f03c53250c402265e"
   name = "golang.org/x/net"
   packages = [
     "context",
-    "context/ctxhttp",
     "http/httpguts",
     "http2",
     "http2/hpack",
@@ -440,17 +358,6 @@
   ]
   pruneopts = "UT"
   revision = "927f97764cc334a6575f4b7a1584a147864d5723"
-
-[[projects]]
-  branch = "master"
-  digest = "1:5276e08fe6a1dfdb65b4f46a2e5d5c9e00be6e499105e441049c3c04a0c83b36"
-  name = "golang.org/x/oauth2"
-  packages = [
-    ".",
-    "internal",
-  ]
-  pruneopts = "UT"
-  revision = "d668ce993890a79bda886613ee587a69dd5da7a6"
 
 [[projects]]
   branch = "master"
@@ -490,35 +397,6 @@
   pruneopts = "UT"
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:da76817708f332e4a6a161581de588bbd420d020e976759408b3321f39f1a48d"
-  name = "golang.org/x/tools"
-  packages = [
-    "go/ast/astutil",
-    "go/gcexportdata",
-    "go/internal/gcimporter",
-    "go/types/typeutil",
-  ]
-  pruneopts = "UT"
-  revision = "d00ac6d27372a4273825635281f2dc360d4be563"
-
-[[projects]]
-  digest = "1:6f3bd49ddf2e104e52062774d797714371fac1b8bddfd8e124ce78e6b2264a10"
-  name = "google.golang.org/appengine"
-  packages = [
-    "internal",
-    "internal/base",
-    "internal/datastore",
-    "internal/log",
-    "internal/remote_api",
-    "internal/urlfetch",
-    "urlfetch",
-  ]
-  pruneopts = "UT"
-  revision = "e9657d882bb81064595ca3b56cbe2546bbabf7b1"
-  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -582,14 +460,6 @@
   version = "v2.0.0"
 
 [[projects]]
-  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
-  version = "v2.2.2"
-
-[[projects]]
   branch = "master"
   digest = "1:cd0855ac6b2ca65ed473699b7cacc68539b4b9994dbc21c6d4124b89a46c66de"
   name = "k8s.io/utils"
@@ -619,7 +489,6 @@
     "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing",
     "github.com/grpc-ecosystem/grpc-gateway/runtime",
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
-    "github.com/haya14busa/reviewdog/cmd/reviewdog",
     "github.com/iancoleman/strcase",
     "github.com/kyokomi/emoji",
     "github.com/mattn/go-colorable",
@@ -630,12 +499,10 @@
     "github.com/soheilhy/cmux",
     "github.com/spf13/afero",
     "github.com/spf13/cobra",
-    "github.com/srvc/wraperr/cmd/wraperr",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
     "go.uber.org/zap",
     "go.uber.org/zap/zapcore",
-    "golang.org/x/lint/golint",
     "golang.org/x/net/context",
     "golang.org/x/sync/errgroup",
     "google.golang.org/genproto/googleapis/api/annotations",

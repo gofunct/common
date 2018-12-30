@@ -1,4 +1,6 @@
-runner:
+package templates
+
+var TemplateReviewdog = MustCreateTemplate("reviewdog", `runner:
   golint:
     cmd: golint $(go list ./... | grep -v /vendor/)
     format: golint
@@ -21,4 +23,4 @@ runner:
     cmd: unparam ./...
     errorformat:
       - "%f:%l:%c: %m"
-
+`)

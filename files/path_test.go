@@ -1,4 +1,4 @@
-package clib_test
+package files_test
 
 import (
 	"testing"

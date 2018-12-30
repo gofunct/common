@@ -65,8 +65,8 @@ ifdef CI
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
 	dep ensure -v -vendor-only
-	@go get github.com/izumin5210/gex/cmd/gex
-	gex --build --verbose
+	@go get github.com/gofunct/bingen
+	bingen --build --verbose
 
 .PHONY: clean
 clean:
@@ -79,9 +79,9 @@ gen:
 .PHONY: lint
 lint:
 ifdef CI
-	gex reviewdog -reporter=github-pr-review
+	bingen reviewdog -reporter=github-pr-review
 else
-	gex reviewdog -diff="git diff master"
+	bingen reviewdog -diff="git diff master"
 endif
 
 .PHONY: test

@@ -1,24 +1,17 @@
-package clib
+package build
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/gofunct/common/io"
 	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-// Build is a container for the application build information.
-type Build struct {
-	AppName   string
-	Version   string
-	Revision  string
-	BuildDate string
-}
-
 // NewVersionCommand create a new cobra.Command to print the version information.
-func NewVersionCommand(io IO, cfg Build) *cobra.Command {
+func NewVersionCommand(io io.IO, cfg Build) *cobra.Command {
 	return &cobra.Command{
 		Use:           "version",
 		Short:         "Print the version information",

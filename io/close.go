@@ -1,4 +1,4 @@
-package clib
+package io
 
 var closers []func()
 
@@ -9,6 +9,6 @@ func Close() {
 	}
 }
 
-func addCloseFunc(f func()) {
+func AddCloseFunc(f func()) {
 	closers = append(closers, f)
 }

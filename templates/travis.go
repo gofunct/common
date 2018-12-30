@@ -1,4 +1,6 @@
-language: go
+package templates
+
+var TemplateTravis = MustCreateTemplate("travis", `language: go
 
 go: '1.11'
 
@@ -47,4 +49,4 @@ jobs:
       on:
         tags: true
     if: type != 'pull_request'
-
+`)

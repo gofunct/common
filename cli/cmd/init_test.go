@@ -2,24 +2,23 @@ package cmd
 
 import (
 	"errors"
+	"github.com/gofunct/common/cli"
+	"github.com/gofunct/common/files"
+	"github.com/gofunct/common/io"
 	"os"
 	"reflect"
 	"testing"
 
 	"github.com/bradleyjkemp/cupaloy"
-	"github.com/gofunct/common/clib"
-	clibtesting "github.com/gofunct/common/clib/testing"
 	"github.com/spf13/afero"
 	"k8s.io/utils/exec"
 	exectesting "k8s.io/utils/exec/testing"
-
-	"github.com/gofunct/common/clig"
-)
+	)
 
 func TestInit(t *testing.T) {
 	defer func(p string) { BuildContext.GOPATH = p }(BuildContext.GOPATH)
 	BuildContext.GOPATH = "/home/go"
-	wd := clib.Path("/home/go/src/go.example.com")
+	wd := files.Path("/home/go/src/go.example.com")
 
 	createFakeCmd := func(name string, args ...string) *exectesting.FakeCmd {
 		cmd := &exectesting.FakeCmd{
@@ -51,7 +50,7 @@ func TestInit(t *testing.T) {
 			},
 			excmds: []*exectesting.FakeCmd{
 				createFakeCmd("dep", "init"),
-				createFakeCmd("gex",
+				createFakeCmd("bingen",
 					"--add", "github.com/mitchellh/gox",
 					"--add", "github.com/haya14busa/reviewdog/cmd/reviewdog",
 					"--add", "github.com/kisielk/errcheck",
@@ -63,7 +62,7 @@ func TestInit(t *testing.T) {
 			},
 		},
 		{
-			test: "gex has already been installed",
+			test: "bingen has already been installed",
 			args: []string{"foobar"},
 			files: []string{
 				"foobar/.gitignore",
@@ -77,8 +76,8 @@ func TestInit(t *testing.T) {
 			},
 			excmds: []*exectesting.FakeCmd{
 				createFakeCmd("dep", "init"),
-				createFakeCmd("go", "get", "github.com/izumin5210/gex/cmd/gex"),
-				createFakeCmd("gex",
+				createFakeCmd("go", "get", "github.com/gofunct/bingen"),
+				createFakeCmd("bingen",
 					"--add", "github.com/mitchellh/gox",
 					"--add", "github.com/haya14busa/reviewdog/cmd/reviewdog",
 					"--add", "github.com/kisielk/errcheck",
@@ -89,7 +88,7 @@ func TestInit(t *testing.T) {
 				),
 			},
 			lookPathFunc: func(cmd string) (string, error) {
-				if cmd == "gex" {
+				if cmd == "bingen" {
 					return "", errors.New("error")
 				}
 				return cmd, nil
@@ -109,7 +108,7 @@ func TestInit(t *testing.T) {
 			},
 			excmds: []*exectesting.FakeCmd{
 				createFakeCmd("dep", "init"),
-				createFakeCmd("gex",
+				createFakeCmd("bingen",
 					"--add", "github.com/mitchellh/gox",
 					"--add", "github.com/haya14busa/reviewdog/cmd/reviewdog",
 					"--add", "github.com/kisielk/errcheck",
@@ -140,9 +139,9 @@ func TestInit(t *testing.T) {
 				})
 			}
 
-			ctx := &clig.Ctx{
+			ctx := &cli.Ctx{
 				WorkingDir: wd,
-				IO:         clibtesting.NewFakeIO(),
+				IO:         io.NewFakeIO(),
 				FS:         fs,
 				Exec:       fexec,
 			}

@@ -1,10 +1,14 @@
-package main
+package templates
+
+var TemplateCtx = MustCreateTemplate("ctx", `package {{.Name}}
 
 import (
 	"github.com/izumin5210/clig/pkg/clib"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
+	{{- if .ViperEnabled}}
 	"github.com/spf13/viper"
+	{{- end}}
 	"go.uber.org/zap"
 	"k8s.io/utils/exec"
 )
@@ -13,7 +17,9 @@ type Ctx struct {
 	WorkingDir clib.Path
 	IO         clib.IO
 	FS         afero.Fs
+	{{- if .ViperEnabled}}
 	Viper      *viper.Viper
+	{{- end}}
 	Exec       exec.Interface
 
 	Build  clib.Build
@@ -21,6 +27,7 @@ type Ctx struct {
 }
 
 func (c *Ctx) Init() error {
+	{{- if .ViperEnabled}}
 	c.Viper.SetFs(c.FS)
 
 	var err error
@@ -30,8 +37,11 @@ func (c *Ctx) Init() error {
 		return errors.WithStack(err)
 	}
 
+	{{- end}}
+
 	return nil
 }
+{{- if .ViperEnabled}}
 
 func (c *Ctx) loadConfig() error {
 	c.Viper.SetConfigName(c.Build.AppName)
@@ -50,4 +60,5 @@ func (c *Ctx) loadConfig() error {
 
 	return nil
 }
-
+{{- end}}
+`)
