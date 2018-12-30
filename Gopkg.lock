@@ -58,22 +58,6 @@
   version = "v1.4.7"
 
 [[projects]]
-  digest = "1:3c4c08c15ef4e018a5d50fdab6a2485d54f97d8ee82acefc2367a9d86289bfee"
-  name = "github.com/go-kit/kit"
-  packages = ["log"]
-  pruneopts = "UT"
-  revision = "12210fb6ace19e0496167bb3e667dcd91fa9f69b"
-  version = "v0.8.0"
-
-[[projects]]
-  digest = "1:4062bc6de62d73e2be342243cf138cf499b34d558876db8d9430e2149388a4d8"
-  name = "github.com/go-logfmt/logfmt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "07c9b44f60d7ffdfb7d8efe1ad539965737836dc"
-  version = "v0.4.0"
-
-[[projects]]
   branch = "master"
   digest = "1:aeb69e838657df593b27f5bddb7cd4964866a3f74232011b5719f8f77e8089ed"
   name = "github.com/gofunct/bingen"
@@ -337,14 +321,6 @@
   pruneopts = "UT"
   revision = "80517062f582ea3340cd4baf70e86d539ae7d84d"
   version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:a64e323dc06b73892e5bb5d040ced475c4645d456038333883f58934abbf6f72"
-  name = "github.com/kr/logfmt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
   digest = "1:b37828a4575379dd178c9c0181def73c0386b42232903bb4945fb6bc2309f847"
@@ -907,7 +883,6 @@
   input-imports = [
     "github.com/bradleyjkemp/cupaloy",
     "github.com/dixonwille/wlog",
-    "github.com/go-kit/kit/log",
     "github.com/gofunct/bingen",
     "github.com/golang/mock/mockgen",
     "github.com/google/go-cmp/cmp",
