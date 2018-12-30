@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"syscall"
 
-	"github.com/gofunct/runtime/internal"
 	"github.com/pkg/errors"
 	"github.com/soheilhy/cmux"
 	"golang.org/x/sync/errgroup"
@@ -31,7 +30,7 @@ func New(opts ...Option) *Engine {
 // Serve starts gRPC and Gateway servers.
 func (e *Engine) Serve() error {
 	var (
-		grpcServer, gatewayServer, muxServer internal.Server
+		grpcServer, gatewayServer, muxServer Serve
 		grpcLis, gatewayLis, internalLis     net.Listener
 		err                                  error
 	)
@@ -97,7 +96,7 @@ func (e *Engine) Serve() error {
 
 	select {
 	case <-ctx.Done():
-		for _, s := range []internal.Server{gatewayServer, grpcServer, muxServer} {
+		for _, s := range []Serve{gatewayServer, grpcServer, muxServer} {
 			if s != nil {
 				s.Shutdown()
 			}

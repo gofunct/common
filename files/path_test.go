@@ -1,14 +1,13 @@
 package files_test
 
 import (
+	"github.com/gofunct/common/files"
 	"testing"
-
-	"github.com/gofunct/common/clib"
-)
+	)
 
 func TestPath_String(t *testing.T) {
 	pathStr := "/go/src/awesomeapp"
-	path := clib.Path(pathStr)
+	path := files.Path(pathStr)
 
 	if got, want := path.String(), pathStr; got != want {
 		t.Errorf("String() returned %q, want %q", got, want)
@@ -16,9 +15,9 @@ func TestPath_String(t *testing.T) {
 }
 
 func TestPath_Join(t *testing.T) {
-	path := clib.Path("/go/src/awesomeapp")
+	path := files.Path("/go/src/awesomeapp")
 
-	if got, want := path.Join("cmd", "server"), clib.Path("/go/src/awesomeapp/cmd/server"); got != want {
+	if got, want := path.Join("cmd", "server"), files.Path("/go/src/awesomeapp/cmd/server"); got != want {
 		t.Errorf("Join() returned %q, want %q", got, want)
 	}
 }

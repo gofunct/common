@@ -7,14 +7,13 @@ import (
 	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/gofunct/runtime/internal"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 )
 
 // NewGatewayServer creates GrpcServer instance.
-func NewGatewayServer(c *Config) internal.Server {
+func NewGatewayServer(c *Config) Serve {
 	return &GatewayServer{
 		Config: c,
 	}

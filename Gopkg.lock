@@ -478,7 +478,6 @@
     "github.com/dixonwille/wlog",
     "github.com/go-kit/kit/log",
     "github.com/gofunct/runtime",
-    "github.com/gofunct/runtime/internal",
     "github.com/gofunct/runtime/testing/api",
     "github.com/gofunct/runtime/testing/app/server",
     "github.com/golang/protobuf/proto",

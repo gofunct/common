@@ -53,5 +53,5 @@ func run() error {
 )
 
 func MustCreateTemplate(name, tmpl string) *template.Template {
-	return template.Must(template.New(name).Funcs(funcMap).Parse(tmpl))
+	return template.Must(template.New(name).Funcs(FuncMap).Parse(tmpl))
 }

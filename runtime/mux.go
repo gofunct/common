@@ -3,7 +3,6 @@ package runtime
 import (
 	"net"
 
-	"github.com/gofunct/runtime/internal"
 	"github.com/pkg/errors"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc/grpclog"
@@ -16,7 +15,7 @@ type MuxServer struct {
 }
 
 // NewMuxServer creates MuxServer instance.
-func NewMuxServer(mux cmux.CMux, lis net.Listener) internal.Server {
+func NewMuxServer(mux cmux.CMux, lis net.Listener) Serve {
 	return &MuxServer{
 		mux: mux,
 		lis: lis,
