@@ -190,28 +190,6 @@
   version = "v1.0"
 
 [[projects]]
-  digest = "1:395909746961a45abfc8b4a566a53cb6335e580768eae7d29d4a196b2bed2d07"
-  name = "github.com/kisielk/errcheck"
-  packages = [
-    ".",
-    "internal/errcheck",
-  ]
-  pruneopts = "UT"
-  revision = "55d8f507faff4d6eddd0c41a3e713e2567fca4e5"
-  version = "v1.1.0"
-
-[[projects]]
-  digest = "1:15ec2166e33ef6c60b344a04d050eec79193517e7f5082b6233b2d09ef0d10b8"
-  name = "github.com/kisielk/gotool"
-  packages = [
-    ".",
-    "internal/load",
-  ]
-  pruneopts = "UT"
-  revision = "80517062f582ea3340cd4baf70e86d539ae7d84d"
-  version = "v1.0.0"
-
-[[projects]]
   branch = "master"
   digest = "1:a64e323dc06b73892e5bb5d040ced475c4645d456038333883f58934abbf6f72"
   name = "github.com/kr/logfmt"
@@ -258,22 +236,6 @@
   pruneopts = "UT"
   revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
   version = "v1.0.1"
-
-[[projects]]
-  digest = "1:a82223630c35be0e7b7e543bf8db95b8de3f1319671b30c6104ea521a00f36fd"
-  name = "github.com/mitchellh/gox"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c9740af9c6574448fd48eb30a71f964014c7a837"
-  version = "v0.4.0"
-
-[[projects]]
-  digest = "1:05b88b3e999037a6f95fa9edc8234b3a12a1c9d12aaa93e0515c0a9aa76b9c10"
-  name = "github.com/mitchellh/iochan"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b6e3aadd28864e14dae41ff5c7261455b1242d24"
-  version = "v1.0.0"
 
 [[projects]]
   digest = "1:450b7623b185031f3a456801155c8320209f75d0d4c4e633c6b1e59d44d6e392"
@@ -531,26 +493,13 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:17bd32dfb269c96f3d5c4ebc831d307d760a039bfd0a00aabfd48efcad381b97"
+  digest = "1:da76817708f332e4a6a161581de588bbd420d020e976759408b3321f39f1a48d"
   name = "golang.org/x/tools"
   packages = [
     "go/ast/astutil",
-    "go/buildutil",
-    "go/callgraph",
-    "go/callgraph/cha",
-    "go/callgraph/rta",
     "go/gcexportdata",
-    "go/internal/cgo",
     "go/internal/gcimporter",
-    "go/internal/packagesdriver",
-    "go/loader",
-    "go/packages",
-    "go/ssa",
-    "go/ssa/ssautil",
     "go/types/typeutil",
-    "internal/fastwalk",
-    "internal/gopathwalk",
-    "internal/semver",
   ]
   pruneopts = "UT"
   revision = "d00ac6d27372a4273825635281f2dc360d4be563"
@@ -641,30 +590,6 @@
   version = "v2.2.2"
 
 [[projects]]
-  digest = "1:6eaf68fa53735d0b557c7a4d5411d3ad97d98d0afdb0969252d6506e67600285"
-  name = "honnef.co/go/tools"
-  packages = [
-    "callgraph",
-    "callgraph/static",
-    "cmd/megacheck",
-    "deprecated",
-    "functions",
-    "internal/sharedcheck",
-    "lint",
-    "lint/lintutil",
-    "simple",
-    "ssa",
-    "ssa/ssautil",
-    "staticcheck",
-    "staticcheck/vrp",
-    "unused",
-    "version",
-  ]
-  pruneopts = "UT"
-  revision = "d73ab98e7c39fdcf9ba65062e43d34310f198353"
-  version = "2017.2.2"
-
-[[projects]]
   branch = "master"
   digest = "1:cd0855ac6b2ca65ed473699b7cacc68539b4b9994dbc21c6d4124b89a46c66de"
   name = "k8s.io/utils"
@@ -674,17 +599,6 @@
   ]
   pruneopts = "UT"
   revision = "8a16e7dd8fb6d97d1331b0c79a16722f934b00b1"
-
-[[projects]]
-  branch = "master"
-  digest = "1:13983723de25381249772ec2b79bebe5426bf875c31cd216f8a94820bf6697fa"
-  name = "mvdan.cc/unparam"
-  packages = [
-    ".",
-    "check",
-  ]
-  pruneopts = "UT"
-  revision = "68701730a1d7cb7ec4085dda7cb976d03f6d1ebf"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -707,11 +621,9 @@
     "github.com/grpc-ecosystem/grpc-gateway/utilities",
     "github.com/haya14busa/reviewdog/cmd/reviewdog",
     "github.com/iancoleman/strcase",
-    "github.com/kisielk/errcheck",
     "github.com/kyokomi/emoji",
     "github.com/mattn/go-colorable",
     "github.com/mattn/go-isatty",
-    "github.com/mitchellh/gox",
     "github.com/opentracing/opentracing-go",
     "github.com/piotrkowalczuk/promgrpc",
     "github.com/pkg/errors",
@@ -733,10 +645,8 @@
     "google.golang.org/grpc/reflection",
     "google.golang.org/grpc/status",
     "gopkg.in/dixonwille/wlog.v2",
-    "honnef.co/go/tools/cmd/megacheck",
     "k8s.io/utils/exec",
     "k8s.io/utils/exec/testing",
-    "mvdan.cc/unparam",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
