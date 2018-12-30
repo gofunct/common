@@ -1,6 +1,8 @@
 package params
 
 import (
+	"github.com/gofunct/common/files"
+	"github.com/gofunct/common/proto/utils"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -8,15 +10,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/serenize/snaker"
 
-	"github.com/izumin5210/grapi/pkg/cli"
-	gencmdutil "github.com/izumin5210/grapi/pkg/gencmd/util"
 )
 
 type Builder interface {
 	Build(path string, resName string, methodNames []string) (*Params, error)
 }
 
-func NewBuilder(rootDir cli.RootDir, protoDir, protoOutDir, serverDir string, pkgName string) Builder {
+func NewBuilder(rootDir files.RootDir, protoDir, protoOutDir, serverDir string, pkgName string) Builder {
 	if protoDir == "" {
 		protoDir = filepath.Join("api", "protos")
 	}
@@ -36,7 +36,7 @@ func NewBuilder(rootDir cli.RootDir, protoDir, protoOutDir, serverDir string, pk
 }
 
 type builderImpl struct {
-	rootDir     cli.RootDir
+	rootDir     files.RootDir
 	protoDir    string
 	protoOutDir string
 	serverDir   string
@@ -44,7 +44,7 @@ type builderImpl struct {
 }
 
 func (b *builderImpl) Build(path string, resName string, methodNames []string) (*Params, error) {
-	protoParams, err := gencmdutil.BuildProtoParams(path, b.rootDir, b.protoOutDir, b.pkgName)
+	protoParams, err := utils.BuildProtoParams(path, b.rootDir, b.protoOutDir, b.pkgName)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -55,7 +55,7 @@ func (b *builderImpl) Build(path string, resName string, methodNames []string) (
 	// quux
 	name := filepath.Base(path)
 
-	names := gencmdutil.Inflect(name)
+	names := utils.Inflect(name)
 
 	// Quux
 	serviceName := names.Camel.Singular
@@ -76,7 +76,7 @@ func (b *builderImpl) Build(path string, resName string, methodNames []string) (
 		"google/api/annotations.proto",
 	}
 	goImports := []string{
-		"github.com/izumin5210/grapi/pkg/grapiserver",
+		"github.com/gofunct/common/runtime",
 		"google.golang.org/grpc/codes",
 		"google.golang.org/grpc/status",
 	}
@@ -84,7 +84,7 @@ func (b *builderImpl) Build(path string, resName string, methodNames []string) (
 
 	resNames := names
 	if resName != "" {
-		resNames = gencmdutil.Inflect(resName)
+		resNames = utils.Inflect(resName)
 	}
 	methods := b.buildMethodParams(resNames, methodNames)
 
@@ -123,7 +123,7 @@ func (b *builderImpl) Build(path string, resName string, methodNames []string) (
 	return params, nil
 }
 
-func (b *builderImpl) buildMethodParams(name gencmdutil.String, methods []string) (
+func (b *builderImpl) buildMethodParams(name utils.String, methods []string) (
 	params MethodsParams,
 ) {
 	id := name.Snake.Singular + "_id"
