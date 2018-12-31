@@ -1,6 +1,10 @@
 package templates
 
-var TemplateReviewdog = MustCreateTemplate("reviewdog", `runner:
+import "text/template"
+
+func ReviewDogTemplate() *template.Template {
+
+	return MustCreateTemplate("reviewdog", `runner:
   golint:
     cmd: golint $(go list ./... | grep -v /vendor/)
     format: golint
@@ -24,3 +28,4 @@ var TemplateReviewdog = MustCreateTemplate("reviewdog", `runner:
     errorformat:
       - "%f:%l:%c: %m"
 `)
+}

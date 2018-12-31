@@ -1,6 +1,11 @@
 package templates
 
-var TemplateGitignore = MustCreateTemplate("gitignore", `/bin
+import "text/template"
+
+func GitIgnoreTemplate() *template.Template {
+
+	return MustCreateTemplate("gitignore", `/bin
 /dist
 /vendor
 `)
+}

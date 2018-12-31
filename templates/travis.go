@@ -1,6 +1,9 @@
 package templates
 
-var TemplateTravis = MustCreateTemplate("travis", `language: go
+import "text/template"
+
+func TravisTemplate() *template.Template {
+	return MustCreateTemplate("travis", `language: go
 
 go: '1.11'
 
@@ -50,3 +53,4 @@ jobs:
         tags: true
     if: type != 'pull_request'
 `)
+}

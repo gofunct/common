@@ -2,8 +2,8 @@ package templates
 
 import (
 	"bytes"
-	"text/template"
 	"github.com/gofunct/common/errors"
+	"text/template"
 )
 
 // TemplateString is a compilable string with text/template package

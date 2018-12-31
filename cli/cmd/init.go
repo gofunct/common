@@ -45,14 +45,14 @@ func newInitCommand(c *cli.Ctx) *cobra.Command {
 			}{Name: name, Package: pkg, ViperEnabled: !skipViper}
 
 			entries := []*entry{
-				{Path: root.Join(".gitignore").String(), Template: templates.TemplateGitignore},
-				{Path: root.Join(".reviewdog.yml").String(), Template: templates.TemplateReviewdog},
-				{Path: root.Join(".travis.yml").String(), Template: templates.TemplateTravis},
-				{Path: root.Join("Makefile").String(), Template: templates.TemplateMakefile},
+				{Path: root.Join(".gitignore").String(), Template: templates.GitIgnoreTemplate()},
+				{Path: root.Join(".reviewdog.yml").String(), Template: templates.ReviewDogTemplate()},
+				{Path: root.Join(".travis.yml").String(), Template: templates.TravisTemplate()},
+				{Path: root.Join("Makefile").String(), Template: templates.MakefileTemplate()},
 				{Path: root.Join("cmd", params.Name, "main.go").String(), Template: templates.TemplateMain},
-				{Path: root.Join("pkg", params.Name, "config.go").String(), Template: templates.TemplateConfig, Skipped: skipViper},
-				{Path: root.Join("pkg", params.Name, "context.go").String(), Template: templates.TemplateCtx},
-				{Path: root.Join("pkg", params.Name, "cmd", "cmd.go").String(), Template: templates.TemplateCmd},
+				{Path: root.Join("pkg", params.Name, "config.go").String(), Template: templates.ConfigTemplate(), Skipped: skipViper},
+				{Path: root.Join("pkg", params.Name, "context.go").String(), Template: templates.ContextTemplate()},
+				{Path: root.Join("pkg", params.Name, "cmd", "cmd.go").String(), Template: templates.TemplateTemplate()},
 			}
 
 			for _, e := range entries {
@@ -166,7 +166,7 @@ func (e *entry) Create(fs afero.Fs, params interface{}) error {
 		}
 	}
 
-	zap.L().Debug("create a new flie", zap.String("path", e.Path))
+	zap.L().Debug("create a new file", zap.String("path", e.Path))
 	err = afero.WriteFile(fs, e.Path, data, 0644)
 	if err != nil {
 		return err
@@ -174,5 +174,3 @@ func (e *entry) Create(fs afero.Fs, params interface{}) error {
 
 	return nil
 }
-
-

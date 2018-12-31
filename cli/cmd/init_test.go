@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/afero"
 	"k8s.io/utils/exec"
 	exectesting "k8s.io/utils/exec/testing"
-	)
+)
 
 func TestInit(t *testing.T) {
 	defer func(p string) { BuildContext.GOPATH = p }(BuildContext.GOPATH)

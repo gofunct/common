@@ -1,6 +1,11 @@
 package templates
 
-var TemplateCmd = MustCreateTemplate("cmd", `package cmd
+import (
+	"text/template"
+)
+
+func TemplateTemplate() *template.Template {
+	return MustCreateTemplate("cmd", `package cmd
 
 import (
 	"github.com/izumin5210/clig/pkg/clib"
@@ -14,7 +19,6 @@ import (
 
 	"{{.Package}}/pkg/{{.Name}}"
 )
-
 func NewDefault{{ToCamel .Name}}Command(wd clib.Path, build clib.Build) *cobra.Command {
 	return New{{ToCamel .Name}}Command(&{{.Name}}.Ctx{
 		WorkingDir: wd,
@@ -45,3 +49,4 @@ func New{{ToCamel .Name}}Command(ctx *{{.Name}}.Ctx) *cobra.Command {
 	return cmd
 }
 `)
+}

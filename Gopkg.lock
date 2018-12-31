@@ -34,14 +34,6 @@
   version = "1.0.0"
 
 [[projects]]
-  digest = "1:d8483668c9a3542585dc222d8a8aafb66d21bd153b9ea61c8e795a07d64488d0"
-  name = "github.com/dixonwille/wlog"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "76a8811f69dff5d130c6b5f0342451b0beb52f37"
-  version = "v2.0.0"
-
-[[projects]]
   digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
   name = "github.com/fatih/color"
   packages = ["."]
@@ -882,7 +874,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/bradleyjkemp/cupaloy",
-    "github.com/dixonwille/wlog",
     "github.com/gofunct/bingen",
     "github.com/golang/mock/mockgen",
     "github.com/google/go-cmp/cmp",

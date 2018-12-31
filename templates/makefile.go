@@ -1,6 +1,10 @@
 package templates
 
-var TemplateMakefile = MustCreateTemplate("makefile", `PATH := ${PWD}/bin:${PATH}
+import "text/template"
+
+func MakefileTemplate() *template.Template {
+
+	return MustCreateTemplate("makefile", `PATH := ${PWD}/bin:${PATH}
 export PATH
 
 .DEFAULT_GOAL := all
@@ -94,3 +98,4 @@ test:
 cover:
 	go test $(GO_TEST_FLAGS) $(GO_COVER_FLAGS) ./...
 `)
+}

@@ -1,6 +1,9 @@
 package templates
 
-var TemplateCtx = MustCreateTemplate("ctx", `package {{.Name}}
+import "text/template"
+
+func ContextTemplate() *template.Template {
+	return MustCreateTemplate("ctx", `package {{.Name}}
 
 import (
 	"github.com/izumin5210/clig/pkg/clib"
@@ -62,3 +65,4 @@ func (c *Ctx) loadConfig() error {
 }
 {{- end}}
 `)
+}
