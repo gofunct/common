@@ -15,7 +15,7 @@ BUILD_DATE ?= $(shell date +'%Y-%m-%dT%H:%M:%SZ')
 GO_BUILD_FLAGS := -v
 GO_TEST_FLAGS := -v -timeout 2m
 GO_COVER_FLAGS := -coverprofile coverage.txt -covermode atomic
-SRC_FILES := $(shell go list -f {{"'{{range .GoFiles}}{{printf \"%s/%s\\n\" $$.Dir .}}{{end}}'"}} ./...)
+SRC_FILES := $(shell go list -f '{{range .GoFiles}}{{printf "%s/%s\n" $$.Dir .}}{{end}}' ./...)
 
 XC_ARCH := 386 amd64
 XC_OS := darwin linux windows
@@ -46,7 +46,7 @@ $(NAME)-package: $(NAME)
 		$(LDFLAGS) \
 		-os="$(XC_OS)" \
 		-arch="$(XC_ARCH)" \
-		-output="$(OUT_DIR)/$(NAME)_{{"{{.OS}}_{{.Arch}}"}}" \
+		-output="$(OUT_DIR)/$(NAME)_{{.OS}}_{{.Arch}}" \
 		$(1)
 
 $(eval GENERATED_BINS += $(OUT))
@@ -60,42 +60,45 @@ $(foreach src,$(wildcard ./cmd/*),$(eval $(call cmd-tmpl,$(src))))
 #  Commands
 #----------------------------------------------------------------
 .PHONY: all
-all: $(GENERATED_BINS)
+all: $(GENERATED_BINS)  ## generate binaries
 
 .PHONY: packages
-packages: $(PACKAGES)
+packages: $(PACKAGES)  ## generate packages
 
 .PHONY: setup
-setup:
+setup: ## setup with bingen
 ifdef CI
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
 	dep ensure -v -vendor-only
-	@go get github.com/izumin5210/gex/cmd/gex
-	gex --build --verbose
+	@go get github.com/gofunct/bingen
+	bingen --build --verbose
 
 .PHONY: clean
-clean:
+clean: ## clean bin
 	rm -rf $(BIN_DIR)/*
 
 .PHONY: gen
-gen:
+gen: ## go generate
 	go generate ./...
 
 .PHONY: lint
-lint:
+lint: ## lint
 ifdef CI
-        gex reviewdog -reporter=github-pr-review
+	bingen reviewdog -reporter=github-pr-review
 else
-        gex reviewdog -diff="git diff master"
+	bingen reviewdog -diff="git diff master"
 endif
 
 .PHONY: test
-test:
+test: ## test all
 	go test $(GO_TEST_FLAGS) ./...
 
 .PHONY: cover
-cover:
+cover: ## test coverage
 	go test $(GO_TEST_FLAGS) $(GO_COVER_FLAGS) ./...
+
+help: ## help
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 `)
 }
