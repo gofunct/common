@@ -2,10 +2,10 @@ package logging_test
 
 import (
 	"github.com/gofunct/common/io"
+	"github.com/gofunct/common/logging"
 	"github.com/spf13/cobra"
 	"strings"
 	"testing"
-	"github.com/gofunct/common/logging"
 )
 
 func TestEmojies(t *testing.T) {
@@ -20,7 +20,6 @@ func TestEmojies(t *testing.T) {
 	logger.UI.Ask("?", "ask")
 	logger.UI.Warn("warn")
 }
-
 
 func TestLogging(t *testing.T) {
 	cases := []struct {
