@@ -9,7 +9,7 @@ import (
 )
 
 func TestEmojies(t *testing.T) {
-	logger := logging.NewLogger()
+	logger := logging.NewMessenger()
 
 	logger.UI.Output("output")
 	logger.UI.Running("running")

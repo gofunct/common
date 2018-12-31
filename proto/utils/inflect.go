@@ -3,6 +3,7 @@ package utils
 import (
 	"strings"
 	"github.com/jinzhu/inflection"
+	"github.com/serenize/snaker"
 
 )
 type String struct {
