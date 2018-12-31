@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/izumin5210/clig/pkg/clib"
+	"github.com/gofunct/common/build"
 
 	"{{.Package}}/pkg/{{.Name}}/cmd"
 )
@@ -40,7 +40,7 @@ func run() error {
 		return err
 	}
 
-	cmd := cmd.NewDefault{{ToCamel .Name}}Command(clib.Path(wd), clib.Build{
+	cmd := cmd.NewDefault{{ToCamel .Name}}Command(clib.Path(wd), build.Build{
 		AppName:   appName,
 		Version:   version,
 		Revision:  revision,
