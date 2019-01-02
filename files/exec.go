@@ -4,13 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"sync"
 
 	"github.com/spf13/afero"
 )
 
-func ListExecutableWithPrefix(fs afero.Fs, prefix string) []string {
+func ListExecutableWithPrefix(fs afero.Fs) []string {
 	var wg sync.WaitGroup
 	ch := make(chan string)
 
@@ -25,7 +24,7 @@ func ListExecutableWithPrefix(fs afero.Fs, prefix string) []string {
 			}
 
 			for _, f := range files {
-				if m := f.Mode(); !f.IsDir() && m&0111 != 0 && strings.HasPrefix(f.Name(), prefix) {
+				if m := f.Mode(); !f.IsDir() && m&0111 != 0 {
 					ch <- f.Name()
 				}
 			}
