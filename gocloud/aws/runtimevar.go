@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -9,7 +10,6 @@ import (
 	"gocloud.dev/runtimevar"
 	"gocloud.dev/runtimevar/driver"
 	"time"
-	"context"
 )
 
 // Options sets options.

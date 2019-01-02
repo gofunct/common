@@ -2,8 +2,8 @@ package logging
 
 import (
 	"github.com/kyokomi/emoji"
-	"os"
 	"gopkg.in/dixonwille/wlog.v2"
+	"os"
 )
 
 var (

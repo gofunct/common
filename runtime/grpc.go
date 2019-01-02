@@ -6,6 +6,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/reflection"
+
+	"github.com/gofunct/common/runtime/private"
 	"github.com/pkg/errors"
 )
 
@@ -16,7 +18,7 @@ type GrpcServer struct {
 }
 
 // NewGrpcServer creates GrpcServer instance.
-func NewGrpcServer(c *Config) Serve {
+func NewGrpcServer(c *Config) private.Server {
 	s := grpc.NewServer(c.serverOptions()...)
 	reflection.Register(s)
 	for _, svr := range c.Servers {

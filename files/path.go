@@ -1,6 +1,7 @@
 package files
 
 import (
+	"github.com/gofunct/common/errors"
 	"github.com/spf13/afero"
 	"go.uber.org/zap"
 	"go/build"
@@ -10,7 +11,6 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
-	"github.com/gofunct/common/errors"
 )
 
 // Path represents a filepath in filesystem.
@@ -23,17 +23,15 @@ func (p Path) Join(elem ...string) Path {
 	return Path(filepath.Join(append([]string{p.String()}, elem...)...))
 }
 
-
 // RootDir represents a project root directory.
 type RootDir struct {
 	Path
 }
 
 // BinDir returns the directory path contains executable binaries.
-func (d *RootDir) BinDir()Path {
+func (d *RootDir) BinDir() Path {
 	return d.Join("bin")
 }
-
 
 type getOSUserFunc func() (*user.User, error)
 

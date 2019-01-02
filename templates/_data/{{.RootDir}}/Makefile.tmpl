@@ -60,7 +60,7 @@ all: $(GENERATED_BINS)  ## generate binaries
 packages: $(PACKAGES)  ## generate packages
 
 .PHONY: setup
-setup: ## setup with bingen
+setup: ## setup with gex
 ifdef CI
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
@@ -90,9 +90,6 @@ test: ## test all
 .PHONY: cover
 cover: ## test coverage
 	go test $(GO_TEST_FLAGS) $(GO_COVER_FLAGS) ./...
-
-format: ## format directory
-	go fmt ./...
 
 help: ## help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort

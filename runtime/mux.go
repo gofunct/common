@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"github.com/gofunct/common/runtime/private"
 	"net"
 
 	"github.com/pkg/errors"
@@ -15,7 +16,7 @@ type MuxServer struct {
 }
 
 // NewMuxServer creates MuxServer instance.
-func NewMuxServer(mux cmux.CMux, lis net.Listener) Serve {
+func NewMuxServer(mux cmux.CMux, lis net.Listener) private.Server {
 	return &MuxServer{
 		mux: mux,
 		lis: lis,

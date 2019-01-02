@@ -3,7 +3,7 @@ package files_test
 import (
 	"github.com/gofunct/common/files"
 	"testing"
-	)
+)
 
 func TestPath_String(t *testing.T) {
 	pathStr := "/go/src/awesomeapp"

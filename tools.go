@@ -7,7 +7,6 @@ import (
 	_ "github.com/golang/mock/mockgen"
 	_ "github.com/google/wire/cmd/wire"
 	_ "github.com/haya14busa/reviewdog/cmd/reviewdog"
-	_ "github.com/gofunct/bingen"
 	_ "github.com/jessevdk/go-assets-builder"
 	_ "github.com/kisielk/errcheck"
 	_ "github.com/mitchellh/gox"

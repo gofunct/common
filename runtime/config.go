@@ -2,35 +2,21 @@ package runtime
 
 import (
 	"crypto/tls"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	"github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/opentracing/opentracing-go"
-	"github.com/piotrkowalczuk/promgrpc"
-	"github.com/pkg/errors"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"google.golang.org/grpc"
-	"log"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	pkg_runtime "runtime"
 	"time"
-)
 
-var (
-	interceptor = promgrpc.NewInterceptor(promgrpc.InterceptorOpts{
-		TrackPeers: true,
-	})
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/pkg/errors"
+	"google.golang.org/grpc"
 )
 
 func createDefaultConfig() *Config {
-
 	config := &Config{
-		GrpcAddr: nil,
 		GrpcInternalAddr: &Address{
 			Network: "unix",
 			Addr:    "tmp/server.sock",
@@ -39,15 +25,12 @@ func createDefaultConfig() *Config {
 			Network: "tcp",
 			Addr:    ":3000",
 		},
-		GrpcServerOption: 				NewServerOpts(),
-		GatewayDialOption:               NewDialOpts(),
 		GatewayServerConfig: &HTTPServerConfig{
 			ReadTimeout:  8 * time.Second,
 			WriteTimeout: 8 * time.Second,
 			IdleTimeout:  2 * time.Minute,
 		},
-		MaxConcurrentStreams:     1000,
-		GatewayServerMiddlewares: nil,
+		MaxConcurrentStreams: 1000,
 	}
 	if pkg_runtime.GOOS == "windows" {
 		config.GrpcInternalAddr = &Address{
@@ -150,71 +133,4 @@ func (c *Config) clientOptions() []grpc.DialOption {
 		},
 		c.GatewayDialOption...,
 	)
-}
-
-func NewDialOpts() []grpc.DialOption {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		log.Fatal("failed to setup logger for grpc interceptor")
-	}
-	opts := []grpc_zap.Option{
-		grpc_zap.WithDurationField(func(duration time.Duration) zapcore.Field {
-			return zap.Int64("grpc.time_ns", duration.Nanoseconds())
-		}),
-	}
-
-	grpc_zap.ReplaceGrpcLogger(logger)
-	streamInterceptors := grpc.StreamClientInterceptor(grpc_middleware.ChainStreamClient(
-		grpc_opentracing.StreamClientInterceptor(grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
-		interceptor.StreamClient(),
-		grpc_zap.StreamClientInterceptor(logger, opts...),
-	))
-
-	unaryInterceptors := grpc.UnaryClientInterceptor(grpc_middleware.ChainUnaryClient(
-		grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
-		interceptor.UnaryClient(),
-		grpc_zap.UnaryClientInterceptor(logger, opts...),
-	))
-
-	dopts := []grpc.DialOption{
-		grpc.WithInsecure(),
-		grpc.WithStatsHandler(interceptor),
-		grpc.WithDialer(interceptor.Dialer(func(addr string, timeout time.Duration) (net.Conn, error) {
-			return net.DialTimeout("tcp", addr, timeout)
-		})),
-		grpc.WithUnaryInterceptor(unaryInterceptors),
-		grpc.WithStreamInterceptor(streamInterceptors),
-	}
-	return dopts
-}
-
-func NewServerOpts() []grpc.ServerOption {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		log.Fatal("failed to setup logger for grpc interceptor")
-	}
-	opts := []grpc_zap.Option{
-		grpc_zap.WithDurationField(func(duration time.Duration) zapcore.Field {
-			return zap.Int64("grpc.time_ns", duration.Nanoseconds())
-		}),
-	}
-
-	grpc_zap.ReplaceGrpcLogger(logger)
-	streamInterceptors := grpc.StreamServerInterceptor(grpc_middleware.ChainStreamServer(
-		grpc_opentracing.StreamServerInterceptor(grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
-		interceptor.StreamServer(),
-		grpc_zap.StreamServerInterceptor(logger, opts...),
-	))
-
-	unaryInterceptors := grpc.UnaryServerInterceptor(grpc_middleware.ChainUnaryServer(
-		grpc_opentracing.UnaryServerInterceptor(grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
-		interceptor.UnaryServer(),
-		grpc_zap.UnaryServerInterceptor(logger, opts...),
-	))
-
-	return []grpc.ServerOption{
-		grpc.StatsHandler(interceptor),
-		grpc.UnaryInterceptor(unaryInterceptors),
-		grpc.StreamInterceptor(streamInterceptors),
-	}
 }

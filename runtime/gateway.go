@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gofunct/common/runtime/private"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
@@ -13,7 +14,7 @@ import (
 )
 
 // NewGatewayServer creates GrpcServer instance.
-func NewGatewayServer(c *Config) Serve {
+func NewGatewayServer(c *Config) private.Server {
 	return &GatewayServer{
 		Config: c,
 	}
