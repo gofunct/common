@@ -85,8 +85,8 @@ func newInitCommand(c *cli.Ctx) *cobra.Command {
 				return err
 			}
 
-			if _, err := c.Exec.LookPath("bingen"); err != nil {
-				err = run(ctx, "go", "get", "github.com/gofunct/bingen")
+			if _, err := c.Exec.LookPath("gex"); err != nil {
+				err = run(ctx, "go", "get", "github.com/izumin5210/gex/cmd/gex")
 				if err != nil {
 					return err
 				}
