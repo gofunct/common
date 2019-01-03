@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/mattn/go-isatty"
-	wlog "gopkg.in/dixonwille/wlog.v2"
+	"gopkg.in/dixonwille/wlog.v2"
 )
 
 //DefaultYN is used to specify what the default answer is to a yes/no Question.
@@ -57,22 +57,14 @@ func NewMenu(Question string) *Menu {
 	}
 }
 
-//ClearOnMenuRun will clear the screen when a menu is ran.
-//This is checked when LoopOnInvalid is activated.
-//Meaning if an error occurred then it will clear the screen before asking again.
 func (m *Menu) ClearOnMenuRun() {
 	m.Clear = true
 }
 
-//SetSeparator sets the separator to use when multiple Options are valid responses.
-//Default value is a space.
 func (m *Menu) SetSeparator(sep string) {
 	m.MultiSeparator = sep
 }
 
-//SetTries sets the number of tries on the loop before failing out.
-//Default is 3.
-//Negative values act like 0.
 func (m *Menu) SetTries(i int) {
 	m.Tries = i
 }
@@ -87,54 +79,31 @@ func (m *Menu) SetDefaultIcon(icon string) {
 	m.DefIcon = icon
 }
 
-//IsYesNo sets the menu to a yes/no state.
-//Does not show Options but does ask Question.
-//Will also parse the answer to allow for all variants of yes/no (IE Y yes No ...)
-//Both will call the Action function you specified.
-// Opt{ID: 1, Text: "y"} for yes and Opt{ID: 2, Text: "n"} for no will be passed to the function.
 func (m *Menu) IsYesNo(def DefaultYN) {
 	m.IsYN = true
 	m.YNDef = def
 }
 
-//Option adds an option to the menu for the user to select from.
-//value is an empty interface that can be used to pass anything through to the function.
-//title is the string the user will select
-//isDefault is whether this option is a default option (IE when no Options are selected).
-//function is what is called when only this option is selected.
-//If function is nil then it will default to the menu's Action.
 func (m *Menu) Option(title string, value interface{}, isDefault bool, function func(Opt) error) {
 	option := NewOption(len(m.Options)+1, title, value, isDefault, function)
 	m.Options = append(m.Options, *option)
 }
 
-//Action adds a default action to use in certain scenarios.
-//If the selected option (by default or user selected) does not have a function applied to it this will be called.
-//If there are no default Options and no option was selected this will be called with an option that has an ID of -1.
 func (m *Menu) Action(function func([]Opt) error) {
 	m.Function = function
 }
 
-//AllowMultiple will tell the menu to allow multiple selections.
-//The menu will fail if this is not called and mulple selections were selected.
 func (m *Menu) AllowMultiple() {
 	m.AllowMultipleQ = true
 }
 
-//ChangeReaderWriter changes where the menu listens and writes to.
-//reader is where user input is collected.
-//writer and errorWriter is where the menu should write to.
 func (m *Menu) ChangeReaderWriter(reader io.Reader, writer, errorWriter io.Writer) {
-	var UI wlog.UI
-	UI = wlog.New(reader, writer, errorWriter)
-	m.UI = UI
+	UI := wlog.New(reader, writer, errorWriter)
+	m.UI = &Messenger{
+		UI:	UI,
+	}
 }
 
-//Run is used to execute the menu.
-//It will print to Options and Question to the screen.
-//It will only clear the screen if ClearOnMenuRun is activated.
-//This will validate all responses.
-//Errors are of type MenuError.
 func (m *Menu) Run() error {
 	if m.Clear {
 		Clear()
@@ -304,8 +273,6 @@ func (m *Menu) ynResParse(res string) ([]int, error) {
 	return []int{int(DefN)}, nil
 }
 
-//Check if response is in the range of Options
-//If it is make sure it is not duplicated
 func (m *Menu) validateResponses(responses []int) error {
 	var tmp []int
 	for _, response := range responses {
@@ -343,8 +310,6 @@ func (m *Menu) getDefault() []Opt {
 	return opt
 }
 
-//make sure that there is an action available to be called in certain cases
-//returns false if it chould not find an action for the number Options available
 func (m *Menu) validOptAndFunc(opt []Opt) bool {
 	if m.Function == nil {
 		if len(opt) == 1 && opt[0].function != nil {
@@ -360,4 +325,26 @@ func (m *Menu) triesLeft() int {
 		return m.Tries
 	}
 	return 0
+}
+
+func setupAndRun(question, current string, options []string, handler func([]Opt) error) error {
+	menu := NewMenu(question)
+	menu.ClearOnMenuRun()
+	menu.LoopOnInvalid()
+
+	for _, option := range options {
+		menu.Option(option, nil, current == option, nil)
+	}
+	menu.Action(handler)
+
+	menu.Option("~~ Exit ~~", nil, false, func(opt Opt) error {
+		os.Exit(0)
+		return nil
+	})
+
+	err := menu.Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }
