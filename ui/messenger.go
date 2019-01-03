@@ -1,4 +1,4 @@
-package logging
+package ui
 
 import (
 	"github.com/kyokomi/emoji"
@@ -27,11 +27,11 @@ type Messenger struct {
 }
 
 func NewMessenger() *Messenger {
+	prefix.UI = wlog.AddConcurrent(prefix)
 	m := &Messenger{
 		UI: prefix,
 	}
 	m.AddColor()
-
 	return m
 }
 

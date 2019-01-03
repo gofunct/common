@@ -8,19 +8,6 @@ import (
 	"testing"
 )
 
-func TestEmojies(t *testing.T) {
-	logger := logging.NewMessenger()
-
-	logger.UI.Output("output")
-	logger.UI.Running("running")
-	logger.UI.Success("success")
-	logger.UI.Log("log")
-	logger.UI.Error("error")
-	logger.UI.Info("info")
-	logger.UI.Ask("?", "ask")
-	logger.UI.Warn("warn")
-}
-
 func TestLogging(t *testing.T) {
 	cases := []struct {
 		args      []string
