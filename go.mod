@@ -21,6 +21,7 @@ require (
 	github.com/jessevdk/go-assets-builder v0.0.0-20130903091706-b8483521738f
 	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a
 	github.com/kisielk/errcheck v1.1.0
+	github.com/kyokomi/emoji v2.0.0+incompatible
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mitchellh/gox v0.4.0
 	github.com/opentracing/opentracing-go v1.0.2 // indirect
@@ -41,7 +42,8 @@ require (
 	google.golang.org/api v0.0.0-20181017004218-3f6e8463aa1d
 	google.golang.org/genproto v0.0.0-20181221175505-bd9b4fb69e2f
 	google.golang.org/grpc v1.17.0
-	gopkg.in/dixonwille/wmenu.v4 v4.0.2
+	gopkg.in/dixonwille/wlog.v2 v2.0.0
+	gopkg.in/dixonwille/wmenu.v4 v4.0.2 // indirect
 	honnef.co/go/tools v0.0.0-20190102075043-fe93b0e3b36b
 	k8s.io/utils v0.0.0-20181221173059-8a16e7dd8fb6
 	mvdan.cc/unparam v0.0.0-20181201214637-68701730a1d7
