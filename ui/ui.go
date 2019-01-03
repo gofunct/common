@@ -3,14 +3,18 @@ package ui
 import (
 	"github.com/kyokomi/emoji"
 	"gopkg.in/dixonwille/wlog.v2"
-	"os"
+	"github.com/gofunct/common/io"
 	"strings"
 )
 
-var (
-	ui = wlog.New(os.Stdin, os.Stdout, os.Stderr)
+type Messenger struct {
+	UI wlog.UI
+}
 
-	prefix = &wlog.PrefixUI{
+func NewMessenger(i io.IO) *Messenger {
+	ui := wlog.New(i.In(), i.Out(), i.Err())
+
+	pui := &wlog.PrefixUI{
 		LogPrefix:     emoji.Sprint(":speech_balloon:"),
 		OutputPrefix:  emoji.Sprint(":boom:"),
 		SuccessPrefix: emoji.Sprint(":white_check_mark:"),
@@ -21,16 +25,11 @@ var (
 		AskPrefix:     emoji.Sprint(":question:"),
 		UI:            ui,
 	}
-)
 
-type Messenger struct {
-	UI wlog.UI
-}
+	cui := wlog.AddConcurrent(pui)
 
-func NewMessenger() *Messenger {
-	ui := wlog.AddConcurrent(prefix)
 	m := &Messenger{
-		UI: ui,
+		UI: cui,
 	}
 
 	m.AddColor()
@@ -46,3 +45,4 @@ func (m *Messenger) AddColor() {
 func (m *Messenger) Section(name string) {
 	m.UI.Log("SECTION: "+strings.ToTitle(name))
 }
+
