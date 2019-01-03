@@ -84,3 +84,8 @@ func IsMenuErr(err error) bool {
 	}
 	return false
 }
+
+func (m *Menu) StandardErr(msg string, err error) {
+	m.UI.UI.Error(msg)
+	m.UI.UI.Error(err.Error())
+}
