@@ -8,7 +8,6 @@ import (
 	"gopkg.in/dixonwille/wlog.v2"
 	"os"
 	"strings"
-	"sync"
 )
 
 // UI is an interface for intaracting with the terminal.
@@ -19,12 +18,15 @@ type UI interface {
 	ItemSkipped(msg string)
 	ItemFailure(msg string, errs ...error)
 	Confirm(msg string) (bool, error)
+	Ask(msg string) string
+	Error(msg string)
+	Output(msg string)
+	Info(msg string)
+	Log(msg string)
+	Warn(msg string)
+	Success(msg string)
+	LogFatal(msg string, err error)
 }
-
-var (
-	ui   UI
-	uiMu sync.Mutex
-)
 
 // UIInstance retuens a singleton UI instance.
 func UIInstance(i iio.IO) UI {
@@ -134,6 +136,11 @@ func (u input) Error(msg string) {
 
 func (u input) Running(msg string) {
 	u.messenger.Running(msg)
+}
+
+func (u input) LogFatal(msg string, err error) {
+	u.messenger.Log(msg)
+	u.messenger.Log(errors.WithStack(err).Error())
 }
 
 func (u input) Ask(msg string) string {
