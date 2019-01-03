@@ -1,7 +1,8 @@
 package ui
 
-import "errors"
-
+import (
+	"github.com/gofunct/common/errors"
+)
 var (
 	//ErrInvalid is returned if a response from user was an invalid option
 	ErrInvalid = errors.New("Invalid response")
@@ -87,5 +88,5 @@ func IsMenuErr(err error) bool {
 
 func (m *Menu) StandardErr(msg string, err error) {
 	m.UI.UI.Error(msg)
-	m.UI.UI.Error(err.Error())
+	m.UI.UI.Error(errors.WithStack(err).Error())
 }
