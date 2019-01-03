@@ -44,5 +44,5 @@ func (m *Messenger) AddColor() {
 
 
 func (m *Messenger) Section(name string) {
-	m.UI.Log("Section: "+strings.ToTitle(name))
+	m.UI.Log("SECTION: "+strings.ToTitle(name))
 }
