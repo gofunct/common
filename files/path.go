@@ -10,9 +10,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"sort"
 	"strings"
-	"sync"
 )
 
 // Path represents a filepath in filesystem.
