@@ -25,9 +25,8 @@ type cliFlags struct {
 
 var envFlag string
 
-func BindGoCloudFlags(cmd *cobra.Command) error {
+func BindGoCloudFlags(cmd *cobra.Command, config *viper.Viper) error {
 	var (
-		config = viper.New()
 		result string
 		ask = ui.NewMessenger()
 		err error

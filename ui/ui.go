@@ -4,6 +4,7 @@ import (
 	"github.com/kyokomi/emoji"
 	"gopkg.in/dixonwille/wlog.v2"
 	"os"
+	"strings"
 )
 
 var (
@@ -39,4 +40,9 @@ func NewMessenger() *Messenger {
 
 func (m *Messenger) AddColor() {
 	m.UI = wlog.AddColor(wlog.Green, wlog.Red, wlog.BrightBlue, wlog.Blue, wlog.Yellow, wlog.BrightMagenta, wlog.Yellow, wlog.BrightGreen, wlog.BrightRed, m.UI)
+}
+
+
+func (m *Messenger) Section(name string) {
+	m.UI.Log("Section: "+strings.ToTitle(name))
 }
