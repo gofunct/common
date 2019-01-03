@@ -62,8 +62,8 @@ func DialLocalSQL(flags *cliFlags) (*sql.DB, error) {
 // LocalRuntimeVar is a Wire provider function that returns the Message of the
 // Day variable based on a local file.
 func LocalRuntimeConfig(flags *cliFlags) (*runtimevar.Variable, func(), error) {
-	v, err := filevar.New(flags.motdVar, runtimevar.StringDecoder, &filevar.Options{
-		WaitDuration: flags.motdVarWaitTime,
+	v, err := filevar.New(flags.runVar, runtimevar.StringDecoder, &filevar.Options{
+		WaitDuration: flags.runVarWaitTime,
 	})
 	if err != nil {
 		return nil, nil, err

@@ -4,7 +4,7 @@ package gocloud
 
 import (
 	"context"
-	"github.com/gofunct/common/gocloud/google"
+	"github.com/gofunct/common/google"
 
 	"github.com/google/wire"
 	"gocloud.dev/blob"
@@ -62,10 +62,10 @@ func GcpRuntimeConfig(ctx context.Context, client pb.RuntimeConfigManagerClient,
 	name := google.ResourceName{
 		ProjectID: string(project),
 		Config:    flags.runtimeConfigName,
-		Variable:  flags.motdVar,
+		Variable:  flags.runVar,
 	}
 	v, err := google.NewVariable(client, name, runtimevar.StringDecoder, &google.Options{
-		WaitDuration: flags.motdVarWaitTime,
+		WaitDuration: flags.runVarWaitTime,
 	})
 	if err != nil {
 		return nil, nil, err

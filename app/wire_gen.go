@@ -12,8 +12,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-sql-driver/mysql"
-	"github.com/gofunct/common/gocloud/aws"
-	"github.com/gofunct/common/gocloud/google"
+	"github.com/gofunct/common/aws"
+	"github.com/gofunct/common/google"
 	"go.opencensus.io/trace"
 	"gocloud.dev/aws/rds"
 	"gocloud.dev/blob"
@@ -235,8 +235,8 @@ func AwsSQLParams(flags *cliFlags) *rdsmysql.Params {
 // awsMOTDVar is a Wire provider function that returns the Message of the Day
 // variable from SSM Parameter Store.
 func AwsRuntimeConfig(ctx context.Context, sess client.ConfigProvider, flags *cliFlags) (*runtimevar.Variable, error) {
-	return aws.NewVariable(sess, flags.motdVar, runtimevar.StringDecoder, &aws.Options{
-		WaitDuration: flags.motdVarWaitTime,
+	return aws.NewVariable(sess, flags.runVar, runtimevar.StringDecoder, &aws.Options{
+		WaitDuration: flags.runVarWaitTime,
 	})
 }
 
@@ -268,10 +268,10 @@ func GcpRuntimeConfig(ctx context.Context, client2 runtimeconfig.RuntimeConfigMa
 	name := google.ResourceName{
 		ProjectID: string(project),
 		Config:    flags.runtimeConfigName,
-		Variable:  flags.motdVar,
+		Variable:  flags.runVar,
 	}
 	v, err := google.NewVariable(client2, name, runtimevar.StringDecoder, &google.Options{
-		WaitDuration: flags.motdVarWaitTime,
+		WaitDuration: flags.runVarWaitTime,
 	})
 	if err != nil {
 		return nil, nil, err
@@ -304,8 +304,8 @@ func DialLocalSQL(flags *cliFlags) (*sql.DB, error) {
 // LocalRuntimeVar is a Wire provider function that returns the Message of the
 // Day variable based on a local file.
 func LocalRuntimeConfig(flags *cliFlags) (*runtimevar.Variable, func(), error) {
-	v, err := filevar.New(flags.motdVar, runtimevar.StringDecoder, &filevar.Options{
-		WaitDuration: flags.motdVarWaitTime,
+	v, err := filevar.New(flags.runVar, runtimevar.StringDecoder, &filevar.Options{
+		WaitDuration: flags.runVarWaitTime,
 	})
 	if err != nil {
 		return nil, nil, err

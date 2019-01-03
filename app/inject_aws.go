@@ -5,7 +5,7 @@ package gocloud
 import (
 	"context"
 	awsclient "github.com/aws/aws-sdk-go/aws/client"
-	"github.com/gofunct/common/gocloud/aws"
+	"github.com/gofunct/common/aws"
 	"github.com/google/wire"
 	"gocloud.dev/aws/awscloud"
 	"gocloud.dev/blob"
@@ -55,7 +55,7 @@ func AwsSQLParams(flags *cliFlags) *rdsmysql.Params {
 // awsMOTDVar is a Wire provider function that returns the Message of the Day
 // variable from SSM Parameter Store.
 func AwsRuntimeConfig(ctx context.Context, sess awsclient.ConfigProvider, flags *cliFlags) (*runtimevar.Variable, error) {
-	return aws.NewVariable(sess, flags.motdVar, runtimevar.StringDecoder, &aws.Options{
-		WaitDuration: flags.motdVarWaitTime,
+	return aws.NewVariable(sess, flags.runVar, runtimevar.StringDecoder, &aws.Options{
+		WaitDuration: flags.runVarWaitTime,
 	})
 }

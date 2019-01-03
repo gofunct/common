@@ -1,12 +1,9 @@
 package google
 
 import (
-	"context"
 	"fmt"
-	"gocloud.dev/runtimevar"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
-	"log"
 	"net/http"
 )
 
