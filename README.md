@@ -1,26 +1,20 @@
-# ![](https://github.com/gofunct/common/blob/master/logo/dark_logo_transparent_background.png?raw=true)  
+![](https://github.com/gofunct/common/blob/master/logo/dark_logo_transparent_background.png?raw=true)  
 
-## Info
+# Common
 
-Author: Coleman Word 
-Email: coleman.word@gofunct.com
-Repo Name: Common
-Language: Golang
-Download: `go get github.com/gofunct/common/...`
+**This is a common library I use for other projects. Some of the libraries may be moved to their own
+repositories in the future.**
 
-Summary: This is a common library I use for other projects. Some of the libraries may be moved to their own
-repositories in the future.
+* Author: Coleman Word 
+* Email: coleman.word@gofunct.com
+* Download: `go get github.com/gofunct/common/...`
 
-Notable:
-- logging-----> logging/
-- errors-----> errors/
-- ui -----> ui/
-- fies -----> files/
-- cobra -----> app/
-- viper -----> app/
-- google cloud -----> google/
-- aws -----> aws/
-- grpc gateway -----> runtime/
+## Table of Contents
+
+- [Common](#common)
+  * [Table of Contents](#table-of-contents)
+  * [Makefile](#makefile)
+  * [File Tree](#file-tree)
 
 ## Makefile
 
