@@ -11,6 +11,35 @@ Download: `go get github.com/gofunct/common/...`
 Summary: This is a common library I use for other projects. Some of the libraries may be moved to their own
 repositories in the future.
 
+Notable:
+- logging-----> logging/
+- errors-----> errors/
+- ui -----> ui/
+- fies -----> files/
+- cobra -----> app/
+- viper -----> app/
+- google cloud -----> google/
+- aws -----> aws/
+- grpc gateway -----> runtime/
+
+## Makefile
+
+Input: `make help`
+```commandline
+Colemans-MacBook-Pro:common coleman$ make help
+all                            generate binaries to bin/
+clean                          remove all binaries in bin/
+cover                          run test coverage
+format                         go format entire directory
+gen                            go generate entire project (wire, vsfgen, mockgen, protoc)
+help                           this help
+lint                           lint with reviewdog
+packages                       generate packages
+setup                          setup with gex
+test                           run all project tests
+
+
+```
 ## File Tree
 
 ```commandline

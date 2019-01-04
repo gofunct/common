@@ -54,13 +54,13 @@ $(foreach src,$(wildcard ./cmd/*),$(eval $(call cmd-tmpl,$(src))))
 #  Commands
 #----------------------------------------------------------------
 .PHONY: all
-all: $(GENERATED_BINS)  ## generate binaries
+all: $(GENERATED_BINS)  ## generate binaries to bin/
 
 .PHONY: packages
 packages: $(PACKAGES)  ## generate packages
 
 .PHONY: setup
-setup: ## setup with bingen
+setup: ## setup with gex
 ifdef CI
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 endif
@@ -68,15 +68,15 @@ endif
 	gex --build --verbose
 
 .PHONY: clean
-clean: ## clean bin
+clean: ## remove all binaries in bin/
 	rm -rf $(BIN_DIR)/*
 
 .PHONY: gen
-gen: ## go generate
+gen: ## go generate entire project (wire, vsfgen, mockgen, protoc)
 	go generate ./...
 
 .PHONY: lint
-lint: ## lint
+lint: ## lint with reviewdog
 ifdef CI
 	gex reviewdog -reporter=github-pr-review
 else
@@ -84,15 +84,15 @@ else
 endif
 
 .PHONY: test
-test: ## test all
+test: ## run all project tests
 	go test $(GO_TEST_FLAGS) ./...
 
 .PHONY: cover
-cover: ## test coverage
+cover: ## run test coverage
 	go test $(GO_TEST_FLAGS) $(GO_COVER_FLAGS) ./...
 
-format: ## format directory
+format: ## go format entire directory
 	go fmt ./...
 
-help: ## help
+help: ## this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
