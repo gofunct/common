@@ -54,9 +54,9 @@ func UIInstance(i iio.IO) UI {
 }
 
 // NewUI creates a new UI instance.
-func NewUI(i iio.IO) UI {
+func NewUI() UI {
 	return &input{
-		messenger: NewWLog(i),
+		messenger: NewWLog(),
 	}
 }
 
@@ -154,8 +154,8 @@ func (u input) Ask(msg string) string {
 	return s
 }
 
-func NewWLog(i iio.IO) *wlog.ConcurrentUI {
-	ui := wlog.New(i.In(), i.Out(), i.Err())
+func NewWLog() *wlog.ConcurrentUI {
+	ui := wlog.New(os.Stdin, os.Stdout, os.Stderr)
 
 	pui := &wlog.PrefixUI{
 		LogPrefix:     emoji.Sprint(":speech_balloon:"),
