@@ -1,10 +1,10 @@
 package files
 
 import (
+	"github.com/gofunct/common/errors"
 	"github.com/serenize/snaker"
 	"path/filepath"
 	"strings"
-	"github.com/gofunct/common/errors"
 )
 
 type ProtoParams struct {

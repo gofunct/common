@@ -46,7 +46,6 @@ func ListExecutable(fs afero.Fs) []string {
 	return execs
 }
 
-
 func ListExecutableWithPrefix(fs afero.Fs, prefix string) []string {
 	var wg sync.WaitGroup
 	ch := make(chan string)

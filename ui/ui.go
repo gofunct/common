@@ -57,7 +57,7 @@ func UIInstance(i iio.IO) UI {
 func NewUI(i iio.IO) UI {
 	return &input{
 		messenger: NewWLog(i),
-		}
+	}
 }
 
 type input struct {
@@ -69,24 +69,24 @@ func (u *input) Section(msg string) {
 	if u.inSection {
 		u.inSection = false
 	}
-	u.Info("*SECTION* "+msg)
+	u.Info("*SECTION* " + msg)
 }
 
 func (u *input) Subsection(msg string) {
 	if u.inSection {
 		u.inSection = false
 	}
-	u.Info("*SUBSECTION* "+ msg)
+	u.Info("*SUBSECTION* " + msg)
 }
 
 func (u *input) ItemSuccess(msg string) {
 	u.inSection = true
 	u.Success(msg)
-	}
+}
 
 func (u *input) ItemSkipped(msg string) {
 	u.inSection = true
-	u.Info("*SKIPPED* "+ msg)
+	u.Info("*SKIPPED* " + msg)
 }
 
 func (u *input) ItemFailure(msg string, errs ...error) {
@@ -153,7 +153,6 @@ func (u input) Ask(msg string) string {
 
 	return s
 }
-
 
 func NewWLog(i iio.IO) *wlog.ConcurrentUI {
 	ui := wlog.New(i.In(), i.Out(), i.Err())
