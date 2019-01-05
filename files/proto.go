@@ -85,7 +85,7 @@ type Params struct {
 	Go          GoParams
 }
 
-type ProtoParams struct {
+type ProtoParameters struct {
 	Package  string
 	Imports  []string
 	Messages []MethodMessage
