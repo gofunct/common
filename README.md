@@ -9,135 +9,20 @@ repositories in the future.**
 * Email: coleman.word@gofunct.com
 * Download: `go get github.com/gofunct/common/...`
 
-## Table of Contents
+## Rules 
 
-- [Common](#common)
-  * [Table of Contents](#table-of-contents)
-  * [Makefile](#makefile)
-  * [File Tree](#file-tree)
+1. Every package should have an interface named Interface
+1. Every package should have an interface implementation called API
+1. Root package interfaces have **capital letters**
+1. Api implementations are named "API"
+1. If you cant make an interface work for a certain type, use viper to read the necessary info from config
 
-## Makefile
-
-Input: `make help`
-```commandline
-Colemans-MacBook-Pro:common coleman$ make help
-all                            generate binaries to bin/
-clean                          remove all binaries in bin/
-cover                          run test coverage
-format                         go format entire directory
-gen                            go generate entire project (wire, vsfgen, mockgen, protoc)
-help                           this help
-lint                           lint with reviewdog
-packages                       generate packages
-setup                          setup with gex
-test                           run all project tests
+## Methodology
+1. create package for interface type ---> ex: exec/exec.go
+2. create interface definition named Interface ---> exec.Interface
+3. create package interface implementation named Api ---> exec.Api
+4. create root file for package import ---> exec.go
+5. create interface named {package name | upper}} that consumes the previous package interface(Interface) ---> exec.go(Interface)
+6. create an initializer for the new interface named New{package name | upper}} ---> exec.go
 
 
-```
-## File Tree
-
-```commandline
-├── LICENSE
-├── Makefile
-├── README.md
-├── app
-│   ├── app.go
-│   ├── bucket.go
-│   ├── flags.go
-│   ├── healthcheck.go
-│   ├── inject_aws.go
-│   ├── inject_gcp.go
-│   ├── inject_local.go
-│   └── wire_gen.go
-├── aws
-│   ├── aws.go
-│   ├── blob.go
-│   ├── runtimevar.go
-│   └── user.go
-├── cmd
-│   ├── root.go
-│   └── vfsgen.go
-├── config
-│   ├── cookie.go
-│   └── utils.go
-├── errors
-│   ├── errors.go
-│   └── stack.go
-├── executor
-│   ├── executor.go
-│   ├── interface.go
-│   ├── options.go
-│   └── options_test.go
-├── f.txt
-├── files
-│   ├── dir.go
-│   ├── exec.go
-│   ├── httpvfs.go
-│   ├── path.go
-│   ├── path_test.go
-│   └── string.go
-├── go.mod
-├── go.sum
-├── google
-│   ├── app.go
-│   ├── blob.go
-│   ├── db.go
-│   ├── gcloud.go
-│   ├── kube.go
-│   ├── run.go
-│   ├── runtime_config.go
-│   └── user.go
-├── io
-│   ├── close.go
-│   └── io.go
-├── logging
-│   ├── logging.go
-│   └── logging_test.go
-├── logo
-│   ├── dark_logo_transparent_background.png
-│   ├── dark_logo_white_background.jpg
-│   ├── logo_transparent_background.png
-│   ├── logo_white_background.jpg
-│   ├── white_logo_color_background.jpg
-│   ├── white_logo_dark_background.jpg
-│   └── white_logo_transparent_background.png
-├── main.go
-├── runtime
-│   ├── config.go
-│   ├── engine.go
-│   ├── gateway.go
-│   ├── grpc.go
-│   ├── http_server_middleware.go
-│   ├── mux.go
-│   ├── options.go
-│   ├── passing_header_middleware.go
-│   ├── passing_header_middleware_test.go
-│   ├── private
-│   │   └── server.go
-│   └── server.go
-├── templates
-│   ├── _data
-│   │   ├── {{.ProtoDir}}
-│   │   │   └── {{.Path}}.proto.tmpl
-│   │   ├── {{.RootDir}}
-│   │   │   ├── Makefile.tmpl
-│   │   │   ├── main.go.tmpl
-│   │   │   └── reviewdog.tmpl
-│   │   ├── {{.ServerDir}}
-│   │   │   ├── {{.Path}}_server.go.tmpl
-│   │   │   ├── {{.Path}}_server_register_funcs.go.tmpl
-│   │   │   └── {{.Path}}_server_test.go.tmpl
-│   │   ├── {{.StaticDir}}
-│   │   │   └── guestbook.html.tmpl
-│   │   └── {{.TfDir}}
-│   │       ├── main.tf.tmpl
-│   │       ├── output.tf.tmpl
-│   │       └── variable.tf.tmpl
-│   ├── gen.go
-│   └── vfsgen.go
-├── tools.go
-├── ui
-│   └── ui.go
-├── util
-    └── exec.go
-```
