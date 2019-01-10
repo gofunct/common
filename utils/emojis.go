@@ -1,4 +1,4 @@
-package emoji
+package utils
 
 import "github.com/kyokomi/emoji"
 
