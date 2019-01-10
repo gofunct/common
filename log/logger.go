@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gofunct/common/utils"
 	"github.com/spf13/viper"
-	"io"
+	"log"
 	"os"
 	"runtime"
 	"time"
@@ -14,26 +14,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-//Log is an interface that is compatible with the stdLib log.Logger
-type Log interface {
-	Fatal(v ...interface{})
-	Fatalf(format string, v ...interface{})
-	Fatalln(v ...interface{})
-	Flags() int
-	Output(calldepth int, s string) error
-	Panic(v ...interface{})
-	Panicf(format string, v ...interface{})
-	Panicln(v ...interface{})
-	Prefix() string
-	Print(v ...interface{})
-	Printf(format string, v ...interface{})
-	Println(v ...interface{})
-	SetFlags(flag int)
-	SetOutput(w io.Writer)
-	SetPrefix(prefix string)
-}
-
-type Logger struct {
+type Service struct {
 	Z    *zap.Logger
 	mode LoggingMode
 }
@@ -71,7 +52,7 @@ var (
 )
 
 // AddLoggingFlags sets "--debug" and "--verbose" flags to the given *cobra.Command instance.
-func (l *Logger) AddLoggingFlags(cmd *cobra.Command) {
+func (l *Service) AddLoggingFlags(cmd *cobra.Command) {
 	var (
 		debugEnabled, verboseEnabled bool
 	)
@@ -82,30 +63,26 @@ func (l *Logger) AddLoggingFlags(cmd *cobra.Command) {
 		switch {
 		case debugEnabled:
 			l.Z.With(
-				zap.String("exec", cmd.Name()),
-				zap.String("version", cmd.Version),
-				zap.Bool("runnable", cmd.Runnable()))
+				zap.String("version", cmd.Version))
 			l.Debug()
 		case verboseEnabled:
 			l.Z.With(
 				zap.String("exec", cmd.Name()),
 				zap.String("version", cmd.Version),
-				zap.Bool("runnable", cmd.Runnable()),
-				zap.Any("meta", cmd.Annotations),
-				zap.Bool("is-root", cmd.HasSubCommands()))
+				zap.Bool("runnable", cmd.Runnable()))
 			l.VerboseLog()
 		}
 	})
 }
 
 // Debug sets a debug logger in global.
-func (l *Logger) Debug() {
+func (l *Service) Debug() {
 	logging = LoggingDebug
 	l.ReplaceLoggerConfig(DebugLogConfig)
 }
 
 // Verbose sets a verbose logger in global.
-func (l *Logger) VerboseLog() {
+func (l *Service) VerboseLog() {
 	logging = LoggingVerbose
 	l.ReplaceLoggerConfig(VerboseLogConfig)
 }
@@ -117,35 +94,36 @@ func IsDebugLog() bool { return logging == LoggingDebug }
 func IsVerboseLog() bool { return logging == LoggingVerbose }
 
 // Logging returns a current logging mode.
-func (l *Logger) Mode() LoggingMode {
+func (l *Service) Mode() LoggingMode {
 	return logging
 }
 
-func (l *Logger) ReplaceLoggerConfig(cfg zap.Config) {
+func (s *Service) ReplaceLoggerConfig(cfg zap.Config) {
 	x, err := cfg.Build()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to initialize a debug logger: %v\n", err)
 	}
 
-	l.AddCloseFunc(func() { l.Z.Sync() })
-	l.AddCloseFunc(zap.ReplaceGlobals(x))
+	s.AddCloseFunc(func() {
+		if err := s.Z.Sync(); err != nil {
+			log.Print("failed to close log sync")
+		}
+	})
+	s.AddCloseFunc(zap.ReplaceGlobals(x))
 }
 
-func (l *Logger) Inititialize() {
+func (l *Service) Inititialize() {
 	switch l.mode {
 	case LoggingDebug:
 		viper.Set("log-level", "debug")
 		l.Z.With(
-			zap.String("user", viper.GetString("USER")),
-			zap.String("pwd", viper.GetString("PWD")))
+			zap.String("user", os.Getenv("USER")))
 		l.Debug()
 	case LoggingVerbose:
 		viper.Set("log-level", "verbpse")
+
 		l.Z.With(
-			zap.String("user", viper.GetString("USER")),
-			zap.String("pwd", viper.GetString("PWD")),
-			zap.String("version", runtime.Version()),
-			zap.String("arch", runtime.GOARCH),
+			zap.String("user", os.Getenv("USER")),
 			zap.Int("cpus", runtime.NumCPU()),
 			zap.Int("routines", runtime.NumGoroutine()))
 		l.VerboseLog()

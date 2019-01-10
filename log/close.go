@@ -3,13 +3,13 @@ package log
 var closers []func()
 
 // Close closes cli utilities.
-func (l *Logger) Close() {
-	l.Print("closing....")
+func (s *Service) Close() {
+	s.DebugC("closing....")
 	for _, f := range closers {
 		f()
 	}
 }
 
-func (l *Logger) AddCloseFunc(f func()) {
+func (s *Service) AddCloseFunc(f func()) {
 	closers = append(closers, f)
 }

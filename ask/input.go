@@ -7,13 +7,13 @@ import (
 	"go.uber.org/zap"
 )
 
-type API struct {
+type Service struct {
 	Q *input.UI
 }
 
-func validateTF(Q string) input.ValidateFunc {
+func validateTF(q string) input.ValidateFunc {
 	return func(ans string) error {
-		zap.L().Debug("received response", zap.String("question", Q), zap.String("answer", ans))
+		zap.L().Debug("received response", zap.String("question", q), zap.String("answer", ans))
 		if ans != "true" && ans != "false" {
 			return fmt.Errorf("input must be true or false")
 		}
@@ -31,8 +31,8 @@ func validateYN(q string) input.ValidateFunc {
 	}
 }
 
-func (u API) YesNo(q string) (bool, error) {
-	ans, err := u.Q.Ask(fmt.Sprintf("%s [y/n]", q), &input.Options{
+func (s *Service) YesNo(q string) (bool, error) {
+	ans, err := s.Q.Ask(fmt.Sprintf("%s [y/n]", q), &input.Options{
 		HideOrder:    true,
 		Loop:         true,
 		ValidateFunc: validateYN(q),
@@ -43,8 +43,8 @@ func (u API) YesNo(q string) (bool, error) {
 	return ans == "y", nil
 }
 
-func (u API) TrueFalse(q string) (bool, error) {
-	ans, err := u.Q.Ask(fmt.Sprintf("%s [true/fase]", q), &input.Options{
+func (s *Service) TrueFalse(q string) (bool, error) {
+	ans, err := s.Q.Ask(fmt.Sprintf("%s [true/fase]", q), &input.Options{
 		HideOrder:    true,
 		Loop:         true,
 		ValidateFunc: validateTF(q),
@@ -55,8 +55,8 @@ func (u API) TrueFalse(q string) (bool, error) {
 	return ans == "true", nil
 }
 
-func (u API) Query(q string) (string, error) {
-	ans, err := u.Q.Ask(fmt.Sprintf("%s [text]", q), &input.Options{
+func (s *Service) Query(q string) (string, error) {
+	ans, err := s.Q.Ask(fmt.Sprintf("%s [text]", q), &input.Options{
 		HideOrder: true,
 		Loop:      true,
 	})

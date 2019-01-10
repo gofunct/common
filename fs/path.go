@@ -47,3 +47,7 @@ func (d RootDir) DocsDir() string {
 func (d RootDir) StaticDir() string {
 	return d.Join("static")
 }
+
+func (d RootDir) TemplatesDir() string {
+	return d.Join("templates")
+}

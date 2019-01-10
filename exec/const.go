@@ -7,7 +7,7 @@ import (
 var (
 	ErrExecutableNotFound           = osexec.ErrNotFound
 	_                     ExitError = CodeExitError{}
-	_                     Interface = &cmdWrapper{}
+	_                     Interface = &Executioner{}
 
 // ErrExecutableNotFound is returned if the executable is not found.
 )

@@ -1,8 +1,7 @@
-package common
+package exec
 
 import (
 	"context"
-	"github.com/gofunct/common/exec"
 	"io"
 	"io/ioutil"
 	osexec "os/exec"
@@ -11,7 +10,7 @@ import (
 )
 
 func TestExecutorNoArgs(t *testing.T) {
-	ex := NewExec()
+	ex := New()
 
 	cmd := ex.Command("true")
 	out, err := cmd.CombinedOutput()
@@ -30,7 +29,7 @@ func TestExecutorNoArgs(t *testing.T) {
 	if len(out) != 0 {
 		t.Errorf("expected no output, got %q", string(out))
 	}
-	ee, ok := err.(exec.ExitError)
+	ee, ok := err.(ExitError)
 	if !ok {
 		t.Errorf("expected an ExitError, got %+v", err)
 	}
@@ -45,13 +44,13 @@ func TestExecutorNoArgs(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected failure, got nil error")
 	}
-	if ee, ok := err.(exec.ExitError); ok {
+	if ee, ok := err.(ExitError); ok {
 		t.Errorf("expected non-ExitError, got %+v", ee)
 	}
 }
 
 func TestExecutorWithArgs(t *testing.T) {
-	ex := NewExec()
+	ex := New()
 
 	cmd := ex.Command("echo", "stdout")
 	out, err := cmd.CombinedOutput()
@@ -73,7 +72,7 @@ func TestExecutorWithArgs(t *testing.T) {
 }
 
 func TestLookPath(t *testing.T) {
-	ex := NewExec()
+	ex := New()
 
 	shExpected, _ := osexec.LookPath("sh")
 	sh, _ := ex.LookPath("sh")
@@ -83,29 +82,29 @@ func TestLookPath(t *testing.T) {
 }
 
 func TestExecutableNotFound(t *testing.T) {
-	x := NewExec()
+	x := New()
 
 	cmd := x.Command("fake_executable_name")
 	_, err := cmd.CombinedOutput()
-	if err != exec.ErrExecutableNotFound {
+	if err != ErrExecutableNotFound {
 		t.Errorf("cmd.CombinedOutput(): Expected error ErrExecutableNotFound but got %v", err)
 	}
 
 	cmd = x.Command("fake_executable_name")
 	_, err = cmd.Output()
-	if err != exec.ErrExecutableNotFound {
+	if err != ErrExecutableNotFound {
 		t.Errorf("cmd.Output(): Expected error ErrExecutableNotFound but got %v", err)
 	}
 
 	cmd = x.Command("fake_executable_name")
 	err = cmd.Run()
-	if err != exec.ErrExecutableNotFound {
+	if err != ErrExecutableNotFound {
 		t.Errorf("cmd.Run(): Expected error ErrExecutableNotFound but got %v", err)
 	}
 }
 
 func TestStopBeforeStart(t *testing.T) {
-	cmd := NewExec().Command("echo", "hello")
+	cmd := New().Command("echo", "hello")
 
 	// no panic calling Stop before calling Run
 	cmd.Stop()
@@ -117,7 +116,7 @@ func TestStopBeforeStart(t *testing.T) {
 }
 
 func TestTimeout(t *testing.T) {
-	exec := NewExec()
+	exec := New()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancel()
 
@@ -128,7 +127,7 @@ func TestTimeout(t *testing.T) {
 }
 
 func TestSetEnv(t *testing.T) {
-	ex := NewExec()
+	ex := New()
 
 	out, err := ex.Command("/bin/sh", "-c", "echo $FOOBAR").CombinedOutput()
 	if err != nil {
@@ -150,7 +149,7 @@ func TestSetEnv(t *testing.T) {
 }
 
 func TestStdIOPipes(t *testing.T) {
-	cmd := NewExec().Command("/bin/sh", "-c", "echo 'OUT'>&1; echo 'ERR'>&2")
+	cmd := New().Command("/bin/sh", "-c", "echo 'OUT'>&1; echo 'ERR'>&2")
 
 	stdoutPipe, err := cmd.StdoutPipe()
 	if err != nil {
