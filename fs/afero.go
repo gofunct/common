@@ -131,7 +131,7 @@ func (a *API) ReadFromFile(path string) ([]byte, error) {
 	return b, err
 }
 
-func (a *API) OpenFile(path string) (afero.File, error) {
+func (a *API) OpenFile(path string, flag int, perm os.FileMode) (afero.File, error) {
 	f, err := a.Open(path)
 	zap.L().Debug("Opening file", zap.String("path", path), zap.Error(err))
 	return f, err

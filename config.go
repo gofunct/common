@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/gofunct/common/config"
 	"github.com/spf13/viper"
+	"github.com/google/wire"
 )
 
 type Config interface {
@@ -20,12 +21,21 @@ type Config interface {
 	GetStringSlice(string) []string
 	GetBool(string) bool
 	GetObject() interface{}
-	config.Provider
+	viper.RemoteProvider
+    SetPath(string)
+    SetProvider(string)
+    SetEndpoint(string)
+    SetSecretKeyring(string)
 }
 
 func NewConfig(vip *viper.Viper) Config {
 	return config.API{
 		V:        vip,
-		Provider: &config.RemoteConfig{},
 	}
 }
+
+var ConfigSet = wire.NewSet(
+	NewConfig,
+)
+
+

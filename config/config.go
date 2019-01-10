@@ -8,7 +8,10 @@ import (
 type API struct {
 	object interface{}
 	V      *viper.Viper
-	Provider
+	provider string
+    endpoint string
+    url      string
+    secret   string
 }
 
 func (a API) MarshalJSON() ([]byte, error) {
@@ -67,4 +70,35 @@ func (a API) ReadRemote() error {
 
 func (a API) GetObject() interface{} {
 	return a.object
+}
+func (r *API) Provider() string {
+	return r.provider
+}
+
+func (r *API) Endpoint() string {
+	return r.endpoint
+}
+
+func (r *API) Path() string {
+	return r.endpoint
+}
+
+func (r *API) SecretKeyring() string {
+	return r.endpoint
+}
+
+func (r *API) SetProvider(s string) {
+	r.provider = s
+}
+
+func (r *API) SetEndpoint(s string) {
+	r.provider = s
+}
+
+func (r *API) SetPath(s string) {
+	r.provider = s
+}
+
+func (r *API) SetSecretKeyring(s string) {
+	r.provider = s
 }
