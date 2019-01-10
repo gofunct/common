@@ -2,18 +2,22 @@ package common
 
 import (
 	"github.com/gofunct/common/flags"
-	"github.com/spf13/viper"
 )
 
 type Flagger interface {
-	viper.FlagValueSet
+	flags.Interface
 }
 
-func NewFlagSet() viper.FlagValueSet {
-	//TODO: add initializer for every type in their source directory
-	return &flags.Flagset{}
+type FlagSet interface {
+	flags.SetInterface
 }
 
-func NewFlag() viper.FlagValue {
+func NewFlag() Flagger {
 	return &flags.Cflag{}
+}
+
+func NewFlagSet(name string) FlagSet {
+	return &flags.Flagset{
+		Name: name,
+	}
 }

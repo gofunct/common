@@ -12,10 +12,20 @@ type Config interface {
 	MarshalJSON() ([]byte, error)
 	UnmarshalJSON(b []byte) error
 	SetObject(i interface{})
+	ReadRemote() error
+	ReadInConfig() error
+	Unmarshal() error
+	Set(string, interface{})
+	GetString(string) string
+	GetStringSlice(string) []string
+	GetBool(string) bool
+	GetObject() interface{}
+	config.Provider
 }
 
-func NewEncoder() Config {
+func NewConfig(vip *viper.Viper) Config {
 	return config.API{
-		Viper: viper.New(),
+		V:        vip,
+		Provider: &config.RemoteConfig{},
 	}
 }

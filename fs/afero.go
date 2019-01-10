@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	AferoOS  = afero.NewOsFs()
-	AferoMem = afero.NewMemMapFs()
 	srcPaths []string
 )
 
@@ -35,11 +33,11 @@ type Interface interface {
 	WriteReader(path string, r io.Reader) (err error)
 }
 
-type Api struct {
+type API struct {
 	*afero.Afero
 }
 
-func (a *Api) Create(name string) (afero.File, error) {
+func (a *API) Create(name string) (afero.File, error) {
 
 	return a.Fs.Create(name)
 
@@ -47,7 +45,7 @@ func (a *Api) Create(name string) (afero.File, error) {
 
 ///////////////////////////CHECK///////////////////////////
 
-func (c *Api) CheckFilepathHasPrefix(path string, prefix string) bool {
+func (a *API) CheckFilepathHasPrefix(path string, prefix string) bool {
 	if len(path) <= len(prefix) {
 		return false
 	}
@@ -60,7 +58,7 @@ func (c *Api) CheckFilepathHasPrefix(path string, prefix string) bool {
 }
 
 // isCmdDir checks if base of name is one of cmdDir.
-func (r *Api) CheckIfCmdDir(name string) bool {
+func (r *API) CheckIfCmdDir(name string) bool {
 	name = filepath.Base(name)
 	for _, cmdDir := range []string{"cmd", "cmds", "command", "commands"} {
 		if name == cmdDir {
@@ -70,83 +68,35 @@ func (r *Api) CheckIfCmdDir(name string) bool {
 	return false
 }
 
-func (a *Api) CheckIfThisIsDir(path string) (bool, error) {
+func (a *API) CheckIfThisIsDir(path string) (bool, error) {
 	return a.IsDir(path)
 }
 
-func (a *Api) CheckIfFileContainThis(filename string, this []byte) (bool, error) {
+func (a *API) CheckIfFileContainThis(filename string, this []byte) (bool, error) {
 	return a.FileContainsBytes(filename, this)
 }
 
-func (a *Api) CheckIfThisDirEmpty(path string) bool {
+func (a *API) CheckIfThisDirEmpty(path string) bool {
 	b, err := a.IsEmpty(path)
 	zap.L().Fatal("Checking if directory is empty", zap.String("path", path), zap.Error(err))
 	return b
 }
 
-func (a *Api) FindAllThisPattern(pattern string) ([]string, error) {
-	f, err := afero.Glob(a, pattern)
-	zap.L().Debug("Finding all files with pattern", zap.String("pattern", pattern), zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllProtoFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.proto")
-	zap.L().Debug("Finding all proto files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllGoFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.go")
-	zap.L().Debug("Finding all go files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllYamlFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.yaml")
-	zap.L().Debug("Finding all yaml files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllJsonFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.json")
-	zap.L().Debug("Finding all json files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllMdFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.md")
-	zap.L().Debug("Finding all markdown files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllPBFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.pb.go")
-	zap.L().Debug("Finding all generated protobuf files", zap.Error(err))
-	return f, err
-}
-
-func (a *Api) FindAllShelllFiles() ([]string, error) {
-	f, err := afero.Glob(a, "*.sh")
-	zap.L().Debug("Finding all shell files", zap.Error(err))
-	return f, err
-}
-
 ///////////////////////////MAKE///////////////////////////
 
-func (a *Api) MakeDir(path string) error {
+func (a *API) MakeDir(path string) error {
 	err := a.MkdirAll(path, 0755)
 	zap.L().Debug("Making All Directories", zap.String("path", path), zap.Error(err))
 	return errors.Wrapf(err, "failed to create %q directory", path)
 }
 
-func (a *Api) MakeTempFile(dir, prefix string) (afero.File, error) {
+func (a *API) MakeTempFile(dir, prefix string) (afero.File, error) {
 	f, err := a.TempFile(dir, prefix)
 	zap.L().Debug("Making Temporary File", zap.String("dir", dir), zap.String("prefix", prefix), zap.Error(err))
 	return f, err
 }
 
-func (a *Api) MakeTempDir(dir, prefix string) (string, error) {
+func (a *API) MakeTempDir(dir, prefix string) (string, error) {
 	s, err := a.TempDir(dir, prefix)
 	zap.L().Debug("Making Temporary Directory", zap.String("dir", dir), zap.String("prefix", prefix), zap.Error(err))
 	return s, err
@@ -154,13 +104,13 @@ func (a *Api) MakeTempDir(dir, prefix string) (string, error) {
 
 ///////////////////////////WRITE///////////////////////////
 
-func (a *Api) WriteToFile(filename string, data []byte) error {
+func (a *API) WriteToFile(filename string, data []byte) error {
 	err := a.WriteFile(filename, data, 0755)
 	zap.L().Debug("Writing to File", zap.String("filename", filename), zap.ByteString("data", data), zap.Error(err))
 	return err
 }
 
-func (a *Api) WriteToReader(path string, r io.Reader) error {
+func (a *API) WriteToReader(path string, r io.Reader) error {
 	err := a.WriteReader(path, r)
 	zap.L().Debug("Writing to File", zap.String("path", path), zap.Any("reader", r), zap.Error(err))
 	return err
@@ -168,20 +118,20 @@ func (a *Api) WriteToReader(path string, r io.Reader) error {
 
 ///////////////////////////READ///////////////////////////
 
-func (a *Api) ReadFromDir(path string) ([]os.FileInfo, error) {
+func (a *API) ReadFromDir(path string) ([]os.FileInfo, error) {
 	i, err := a.ReadDir(path)
 	zap.L().Debug("Reading directory", zap.String("path", path), zap.Error(err))
 
 	return i, err
 }
 
-func (a *Api) ReadFromFile(path string) ([]byte, error) {
+func (a *API) ReadFromFile(path string) ([]byte, error) {
 	b, err := a.ReadFile(path)
 	zap.L().Debug("Reading file", zap.String("path", path), zap.Error(err))
 	return b, err
 }
 
-func (a *Api) OpenFile(path string) (afero.File, error) {
+func (a *API) OpenFile(path string) (afero.File, error) {
 	f, err := a.Open(path)
 	zap.L().Debug("Opening file", zap.String("path", path), zap.Error(err))
 	return f, err
@@ -189,7 +139,7 @@ func (a *Api) OpenFile(path string) (afero.File, error) {
 
 ///////////////////////////WALK///////////////////////////
 
-func (a *Api) WalkPath(path string, walkFn filepath.WalkFunc) error {
+func (a *API) WalkPath(path string, walkFn filepath.WalkFunc) error {
 	err := a.Walk(path, walkFn)
 	zap.L().Debug("Walking path with func", zap.String("path", path), zap.Error(err))
 	return err
@@ -199,7 +149,7 @@ func (a *Api) WalkPath(path string, walkFn filepath.WalkFunc) error {
 
 ///////////////////////////DELETE///////////////////////////
 
-func (a *Api) Remove(path string) error {
+func (a *API) Remove(path string) error {
 	err := a.Remove(path)
 	zap.L().Debug("Removing file", zap.String("path", path), zap.Error(err))
 	return err
@@ -207,43 +157,48 @@ func (a *Api) Remove(path string) error {
 
 ///////////////////////////OTHER///////////////////////////
 
-func (a *Api) Rename(old, new string) error {
+func (a *API) Rename(old, new string) error {
 	err := a.Rename(old, new)
 	zap.L().Debug("Renaming", zap.String("old", old), zap.String("new", new), zap.Error(err))
 	return err
 }
 
-func (a *Api) ChangePermissions(path string, o os.FileMode) error {
+func (a *API) ChangePermissions(path string, o os.FileMode) error {
 	err := a.Chmod(path, o)
 	zap.L().Debug("Changing permissions", zap.String("path", path), zap.Any("file-mode", o), zap.Error(err))
 	return err
 }
 
-func (a *Api) Stat(name string) (os.FileInfo, error) {
+func (a *API) Stat(name string) (os.FileInfo, error) {
 	o, err := a.Stat(name)
 	zap.L().Debug("Changing permissions", zap.String("name", name), zap.Error(err))
 	return o, err
 }
 
 // exists checks if a file or directory exists.
-func (f *Api) Exists(path string) bool {
+func (f *API) Exists(path string) (bool, error) {
 	if path == "" {
-		return false
+		return false, nil
 	}
 	_, err := f.Stat(path)
 	if err == nil {
-		return true
+		return true, nil
 	}
 	if !os.IsNotExist(err) {
-		zap.L().Fatal("file or directory already exists", zap.Error(err))
+		return true, err
 	}
-	return false
+	return false, err
 }
 
 // findCmdDir checks if base of absPath is cmd dir and returns it or
 // looks for existing cmd dir in absPath.
-func (f *Api) FindCmdDir(absPath string) string {
-	if !f.Exists(absPath) || f.CheckIfThisDirEmpty(absPath) {
+func (f *API) FindCmdDir(absPath string) string {
+	absExists, err := f.Exists(absPath)
+	if err != nil {
+		zap.L().Fatal("failed to check if abs path exists", zap.Error(err))
+	}
+
+	if !absExists || f.CheckIfThisDirEmpty(absPath) {
 		return "cmd"
 	}
 
@@ -262,14 +217,18 @@ func (f *Api) FindCmdDir(absPath string) string {
 }
 
 // findPackage returns full path to existing go package in GOPATHs.
-func (f *Api) FindPackage(packageName string) string {
+func (f *API) FindPackage(packageName string) string {
 	if packageName == "" {
 		return ""
 	}
 
 	for _, srcPath := range srcPaths {
 		packagePath := filepath.Join(srcPath, packageName)
-		if f.Exists(packagePath) {
+		b, err := f.Exists(packagePath)
+		if err != nil {
+			zap.L().Fatal("failed to check if package path exists", zap.Error(err))
+		}
+		if b {
 			return packagePath
 		}
 	}
@@ -278,7 +237,7 @@ func (f *Api) FindPackage(packageName string) string {
 }
 
 // trimSrcPath trims at the beginning of absPath the srcPath.
-func (f *Api) TrimSrcPath(absPath, srcPath string) string {
+func (f *API) TrimSrcPath(absPath, srcPath string) string {
 	relPath, err := filepath.Rel(srcPath, absPath)
 	if err != nil {
 		zap.L().Fatal("failed to get abs from src path", zap.Error(err))
@@ -287,7 +246,7 @@ func (f *Api) TrimSrcPath(absPath, srcPath string) string {
 }
 
 // isCmdDir checks if base of name is one of cmdDir.
-func (f *Api) IsCmdDir(name string) bool {
+func (f *API) IsCmdDir(name string) bool {
 	name = filepath.Base(name)
 	for _, cmdDir := range []string{"cmd", "cmds", "command", "commands"} {
 		if name == cmdDir {
@@ -297,7 +256,7 @@ func (f *Api) IsCmdDir(name string) bool {
 	return false
 }
 
-func (f *Api) FilepathHasPrefix(path string, prefix string) bool {
+func (f *API) FilepathHasPrefix(path string, prefix string) bool {
 	if len(path) <= len(prefix) {
 		return false
 	}
@@ -309,7 +268,15 @@ func (f *Api) FilepathHasPrefix(path string, prefix string) bool {
 
 }
 
-func (f *Api) GetCurrentUser() string {
+func (f *API) GetCurrentUser() string {
 	usr, _ := user.Current()
 	return usr.Username
+}
+
+func (f *API) NewBasePathFs(dir string) {
+	f.Fs = afero.NewBasePathFs(afero.NewOsFs(), dir)
+}
+
+func (f *API) NewMemMapOs() {
+	f.Fs = afero.NewMemMapFs()
 }

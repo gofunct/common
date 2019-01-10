@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gofunct/common/utils"
 	"github.com/spf13/viper"
+	"io"
 	"os"
 	"runtime"
 	"time"
@@ -12,6 +13,25 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
+
+//Log is an interface that is compatible with the stdLib log.Logger
+type Log interface {
+	Fatal(v ...interface{})
+	Fatalf(format string, v ...interface{})
+	Fatalln(v ...interface{})
+	Flags() int
+	Output(calldepth int, s string) error
+	Panic(v ...interface{})
+	Panicf(format string, v ...interface{})
+	Panicln(v ...interface{})
+	Prefix() string
+	Print(v ...interface{})
+	Printf(format string, v ...interface{})
+	Println(v ...interface{})
+	SetFlags(flag int)
+	SetOutput(w io.Writer)
+	SetPrefix(prefix string)
+}
 
 type Logger struct {
 	Z    *zap.Logger

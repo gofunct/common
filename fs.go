@@ -39,10 +39,12 @@ type Fs interface {
 	Chmod(name string, mode os.FileMode) error
 	//Chtimes changes the access and modification times of the named file
 	Chtimes(name string, atime time.Time, mtime time.Time) error
+	NewBasePathFs(dir string)
+	NewMemMapOs()
 }
 
 func NewAferoFs() Fs {
-	return &fs.Api{
+	return &fs.API{
 		Afero: &afero.Afero{
 			Fs: afero.NewOsFs(),
 		},
