@@ -10,6 +10,7 @@ import (
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/iio"
 	"github.com/google/wire"
+	"github.com/izumin5210/grapi/pkg/protoc"
 	"github.com/jessevdk/go-assets"
 	"path/filepath"
 )
@@ -21,6 +22,7 @@ var DefaultSet = wire.NewSet(
 	iio.Set,
 	exec.DefaultSet,
 	log.VerboseSet,
+	protoc.WrapperSet,
 )
 
 var OtherSet = wire.NewSet()
@@ -50,7 +52,7 @@ func NewLog() (*log.Service, error) {
 
 func NewExec(name string, args ...string) (exec.Interface, error) {
 	wire.Build(DefaultSet)
-	return &exec.Executioner{}, nil
+	return &exec.Scripter{}, nil
 }
 
 ////////

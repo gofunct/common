@@ -7,6 +7,8 @@ import (
 	"github.com/gofunct/common/fs"
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/iio"
+	"github.com/izumin5210/gex"
+	"github.com/izumin5210/gex/pkg/tool"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
 	"path/filepath"
@@ -14,7 +16,7 @@ import (
 )
 
 type Runtime struct {
-	exec.Service
+	exec.Interface
 	Object       interface{}
 	Meta         map[string]interface{}
 	Initializers []func() error
@@ -23,11 +25,13 @@ type Runtime struct {
 	Handler      Handler
 	Middleware   Middleware
 	Runner       Runner
-	Q            *ask.Service
-	V            *config.Service
-	IO           *iio.Service
-	FS           *fs.Service
-	L            *log.Service
+	tool.Repository
+	*gex.Config
+	Q  *ask.Service
+	V  *config.Service
+	IO *iio.Service
+	FS *fs.Service
+	L  *log.Service
 }
 
 func (r Runtime) SetObject(i interface{}) {

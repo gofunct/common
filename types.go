@@ -8,6 +8,11 @@ import (
 	"text/template"
 )
 
+// Wrapper can execute protoc commands for current project's proto files.
+type Service interface {
+	Exec(context.Context) error
+}
+
 type Handler func(ctx context.Context, request interface{}) (response interface{}, err error)
 
 type Middleware func(Handler) Handler

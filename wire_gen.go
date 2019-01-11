@@ -14,6 +14,7 @@ import (
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/iio"
 	"github.com/google/wire"
+	"github.com/izumin5210/grapi/pkg/protoc"
 	"github.com/jessevdk/go-assets"
 	"path/filepath"
 )
@@ -69,6 +70,6 @@ func NewVerboseLog() (*log.Service, error) {
 
 // inject.go:
 
-var DefaultSet = wire.NewSet(ask.DefaultSet, config.DefaultSet, fs.DefaultSet, iio.Set, exec.DefaultSet, log.VerboseSet)
+var DefaultSet = wire.NewSet(ask.DefaultSet, config.DefaultSet, fs.DefaultSet, iio.Set, exec.DefaultSet, log.VerboseSet, protoc.WrapperSet)
 
 var OtherSet = wire.NewSet()
