@@ -9,20 +9,35 @@ repositories in the future.**
 * Email: coleman.word@gofunct.com
 * Download: `go get github.com/gofunct/common/...`
 
-## Rules 
-
-1. Every package should have an interface named Interface
-1. Every package should have an interface implementation called API
-1. Root package interfaces have **capital letters**
-1. Api implementations are named "API"
-1. If you cant make an interface work for a certain type, use viper to read the necessary info from config
-
-## Methodology
-1. create package for interface type ---> ex: exec/exec.go
-2. create interface definition named Interface ---> exec.Interface
-3. create package interface implementation named Api ---> exec.Api
-4. create root file for package import ---> exec.go
-5. create interface named {package name | upper}} that consumes the previous package interface(Interface) ---> exec.go(Interface)
-6. create an initializer for the new interface named New{package name | upper}} ---> exec.go
+## Overview
+* Root directory holds initialization functions that act as providers for the main types in other packages
+* Wire is used for dependency injection
 
 
+## Key Types
+
+    type Runtime interface {
+    exec.Interface
+    io.ReaderWriter
+    }
+
+    type HandleFunc func(context.Context, interface{})   (interface{}, error) 
+
+is the function that is required to initialize the runtime. This handler is then passed to the runtime's wrapper functions:
+
+    type ChainFunc func(Handler) Handler
+
+This Morphs the Handler in a chain until it reaches the required Execute() error method which finally executes the Handler function.
+
+This setup allows you to create programs that support plugable components with an interface that is easily satisfied by types like cobra.Command.Execute, os.Exec.Run, http.Server.Serve, etc...
+
+    type Service struct {
+        config.Service
+        iio.Service
+        exec.Service
+        Handle.   HandleFunc
+        Chain.    ChainFunc
+    }
+
+
+The service type implements the Runtime interface and additionally provides functionality for reading runtime configuration from remote endpoint, or from a local file. 
