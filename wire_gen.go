@@ -12,6 +12,7 @@ import (
 	"github.com/gofunct/common/fs"
 	"github.com/gofunct/common/fs/generator"
 	"github.com/gofunct/common/log"
+	"github.com/gofunct/common/render"
 	"github.com/gofunct/iio"
 	"github.com/google/wire"
 	"github.com/izumin5210/grapi/pkg/protoc"
@@ -68,8 +69,12 @@ func NewVerboseLog() (*log.Service, error) {
 	return service, nil
 }
 
+func NewRenderer() *render.Renderer {
+	renderConfig := render.NewConfig()
+	renderer := render.NewRenderer(renderConfig)
+	return renderer
+}
+
 // inject.go:
 
-var DefaultSet = wire.NewSet(ask.DefaultSet, config.DefaultSet, fs.DefaultSet, iio.Set, exec.DefaultSet, log.VerboseSet, protoc.WrapperSet)
-
-var OtherSet = wire.NewSet()
+var DefaultSet = wire.NewSet(ask.DefaultSet, config.DefaultSet, fs.DefaultSet, iio.Set, exec.DefaultSet, log.VerboseSet, protoc.WrapperSet, render.Set)

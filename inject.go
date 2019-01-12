@@ -8,6 +8,7 @@ import (
 	"github.com/gofunct/common/exec"
 	"github.com/gofunct/common/fs"
 	"github.com/gofunct/common/log"
+	"github.com/gofunct/common/render"
 	"github.com/gofunct/iio"
 	"github.com/google/wire"
 	"github.com/izumin5210/grapi/pkg/protoc"
@@ -23,9 +24,8 @@ var DefaultSet = wire.NewSet(
 	exec.DefaultSet,
 	log.VerboseSet,
 	protoc.WrapperSet,
+	render.Set,
 )
-
-var OtherSet = wire.NewSet()
 
 func NewAsk() (*ask.Service, error) {
 	wire.Build(DefaultSet)
@@ -60,4 +60,9 @@ func NewExec(name string, args ...string) (exec.Interface, error) {
 func NewVerboseLog() (*log.Service, error) {
 	wire.Build(DefaultSet)
 	return &log.Service{}, nil
+}
+
+func NewRenderer() *render.Renderer {
+	wire.Build(DefaultSet)
+	return &render.Renderer{}
 }
