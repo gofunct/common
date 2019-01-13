@@ -1,3 +1,5 @@
+//+build wireinject
+
 package ask
 
 import (
@@ -21,6 +23,12 @@ func New(i *iio.Service) *Service {
 	}
 }
 
-var DefaultSet = wire.NewSet(
+var Providers = wire.NewSet(
+	iio.Inject,
 	New,
 )
+
+func Inject() (*Service, error) {
+	wire.Build(Providers)
+	return &Service{}, nil
+}

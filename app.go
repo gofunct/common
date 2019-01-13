@@ -1,61 +1,55 @@
-// Copyright 2018 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-package main
+package common
 
 import (
 	"context"
-	"errors"
-	"flag"
+	"database/sql"
 	"fmt"
+	"github.com/gofunct/common/ask"
+	"github.com/gofunct/common/fs"
+	"github.com/gofunct/common/hack"
+	"github.com/gofunct/common/log"
+	"github.com/gofunct/common/render"
+	"github.com/gofunct/iio"
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
+	"gocloud.dev/blob"
+	"gocloud.dev/server"
+	"gopkg.in/pipe.v2"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strings"
 	"time"
-
-	pipe "gopkg.in/pipe.v2"
 )
 
-func main() {
-	guestbookDir := flag.String("guestbook_dir", ".", "directory containing guestbook sample source code")
-	flag.Parse()
-	if flag.NArg() > 1 {
-		fmt.Fprintf(os.Stderr, "usage: localdb [flags] container_name\n")
-		os.Exit(1)
-	}
-	log.SetPrefix("localdb: ")
-	log.SetFlags(0)
-	if err := runLocalDB(flag.Arg(0), *guestbookDir); err != nil {
-		log.Fatal(err)
-	}
+type application struct {
+	srv      *server.Server
+	db       *sql.DB
+	bucket   *blob.Bucket
+	Config   *Config
+	FS       *fs.Service
+	Scripter *hack.Service
+	Q        *ask.Service
+	Renderer *render.Service
+	L        *log.Service
+	IO       *iio.Service
+	Router   *mux.Router
 }
 
-func runLocalDB(containerName, guestbookDir string) error {
+func (a *application) SetupLocalDb() error {
 	image := "mysql:5.6"
 
-	log.Printf("Starting container running MySQL")
+	zap.L().Debug("Starting container running MySQL")
 	dockerArgs := []string{"run", "--rm"}
-	if containerName != "" {
-		dockerArgs = append(dockerArgs, "--name", containerName)
+	if a.Config.Container != "" {
+		dockerArgs = append(dockerArgs, "--name", a.Config.Container)
 	}
 	dockerArgs = append(dockerArgs,
-		"--env", "MYSQL_DATABASE=guestbook",
-		"--env", "MYSQL_ROOT_PASSWORD=password",
+		"--env", "MYSQL_DATABASE="+a.Config.DbName,
+		"--env", "MYSQL_ROOT_PASSWORD="+a.Config.DbPassword,
 		"--detach",
 		"--publish", "3306:3306",
 		image)
@@ -67,11 +61,12 @@ func runLocalDB(containerName, guestbookDir string) error {
 	}
 	containerID := strings.TrimSpace(string(out))
 	defer func() {
-		log.Printf("killing %s", containerID)
+		zap.L().Debug("killing", zap.String("container", containerID))
 		stop := exec.Command("docker", "kill", containerID)
 		stop.Stderr = os.Stderr
 		if err := stop.Run(); err != nil {
-			log.Printf("failed to kill db container: %v", err)
+			zap.L().Debug("failed to kill db container", zap.Error(err))
+
 		}
 	}()
 
@@ -86,20 +81,19 @@ func runLocalDB(containerName, guestbookDir string) error {
 	}()
 
 	nap := 10 * time.Second
-	log.Printf("Waiting %v for database to come up", nap)
+	zap.L().Debug("Waiting %v for database to come up", zap.Duration("nap", nap))
 	select {
 	case <-time.After(nap):
 		// ok
 	case <-ctx.Done():
 		return errors.New("interrupted while napping")
 	}
-
-	log.Printf("Initializing database schema and users")
-	schema, err := ioutil.ReadFile(filepath.Join(guestbookDir, "schema.sql"))
+	zap.L().Debug("Initializing database schema and users")
+	schema, err := ioutil.ReadFile(filepath.Join(a.Config.Source, "schema.sql"))
 	if err != nil {
 		return fmt.Errorf("reading schema: %v", err)
 	}
-	roles, err := ioutil.ReadFile(filepath.Join(guestbookDir, "roles.sql"))
+	roles, err := ioutil.ReadFile(filepath.Join(a.Config.Source, "roles.sql"))
 	if err != nil {
 		return fmt.Errorf("reading roles: %v", err)
 	}
@@ -112,7 +106,7 @@ func runLocalDB(containerName, guestbookDir string) error {
 			pipe.Exec("docker", "run", "--rm", "--interactive", "--link", containerID+":mysql", image, "sh", "-c", mySQL),
 		)
 		if _, stderr, err := pipe.DividedOutput(p); err != nil {
-			log.Printf("Failed to seed database: %q; retrying", stderr)
+			zap.L().Debug("Failed to seed database, retrying", zap.Any("stderr", stderr))
 			select {
 			case <-time.After(time.Second):
 				continue
@@ -125,8 +119,7 @@ func runLocalDB(containerName, guestbookDir string) error {
 	if i == tooMany {
 		return fmt.Errorf("gave up after %d tries to seed database", i)
 	}
-
-	log.Printf("Database running at localhost:3306")
+	zap.L().Debug("Database running at localhost:3306")
 	attach := exec.CommandContext(ctx, "docker", "attach", containerID)
 	attach.Stdout = os.Stdout
 	attach.Stderr = os.Stderr
@@ -135,4 +128,11 @@ func runLocalDB(containerName, guestbookDir string) error {
 	}
 
 	return nil
+}
+
+func (app *application) RunLocalDb() {
+
+	if err := app.SetupLocalDb(); err != nil {
+		zap.L().Fatal("failed to run local db", zap.Error(errors.WithStack(err)))
+	}
 }

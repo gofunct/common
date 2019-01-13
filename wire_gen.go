@@ -6,74 +6,201 @@
 package common
 
 import (
+	"context"
+	"contrib.go.opencensus.io/exporter/stackdriver/monitoredresource"
+	"database/sql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/gofunct/common/ask"
-	"github.com/gofunct/common/config"
-	"github.com/gofunct/common/exec"
 	"github.com/gofunct/common/fs"
-	"github.com/gofunct/common/fs/generator"
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/common/render"
+	"github.com/gofunct/common/router"
 	"github.com/gofunct/iio"
-	"github.com/google/wire"
-	"github.com/izumin5210/grapi/pkg/protoc"
-	"github.com/jessevdk/go-assets"
-	"path/filepath"
+	"go.opencensus.io/trace"
+	"gocloud.dev/blob"
+	"gocloud.dev/blob/fileblob"
+	"gocloud.dev/blob/gcsblob"
+	"gocloud.dev/gcp"
+	"gocloud.dev/gcp/cloudsql"
+	"gocloud.dev/mysql/cloudmysql"
+	"gocloud.dev/requestlog"
+	"gocloud.dev/server"
+	"gocloud.dev/server/sdserver"
 )
 
-// Injectors from inject.go:
+// Injectors from inject_gcp.go:
 
-func NewAsk() (*ask.Service, error) {
-	service := iio.NewStdIO()
-	askService := ask.New(service)
-	return askService, nil
-}
-
-func NewConfig() (*config.Service, error) {
-	service, err := config.New()
+func SetupGCP(ctx context.Context, cfg *Config) (*application, func(), error) {
+	stackdriverLogger := sdserver.NewRequestLogger()
+	roundTripper := gcp.DefaultTransport()
+	credentials, err := gcp.DefaultCredentials(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return service, nil
-}
-
-func NewFs(walkFunc filepath.WalkFunc, f *assets.FileSystem) (*fs.Service, error) {
-	service := generator.New(f)
-	fsService := fs.NewWithGenerator(walkFunc, service)
-	return fsService, nil
-}
-
-func NewIO() (*iio.Service, error) {
-	service := iio.NewStdIO()
-	return service, nil
-}
-
-func NewLog() (*log.Service, error) {
-	service, err := log.NewVerbose()
+	tokenSource := gcp.CredentialsTokenSource(credentials)
+	httpClient, err := gcp.NewHTTPClient(roundTripper, tokenSource)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return service, nil
-}
-
-func NewScripter() *exec.Scripter {
-	scripter := exec.NewScripter()
-	return scripter
-}
-
-func NewVerboseLog() (*log.Service, error) {
-	service, err := log.NewVerbose()
+	remoteCertSource := cloudsql.NewCertSource(httpClient)
+	projectID, err := gcp.DefaultProjectID(credentials)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return service, nil
+	params := gcpSQLParams(projectID, cfg)
+	db, err := cloudmysql.Open(ctx, remoteCertSource, params)
+	if err != nil {
+		return nil, nil, err
+	}
+	v, cleanup := appHealthChecks(db)
+	monitoredresourceInterface := monitoredresource.Autodetect()
+	exporter, cleanup2, err := sdserver.NewExporter(projectID, tokenSource, monitoredresourceInterface)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	sampler := trace.AlwaysSample()
+	defaultDriver := _wireDefaultDriverValue
+	options := &server.Options{
+		RequestLogger:         stackdriverLogger,
+		HealthChecks:          v,
+		TraceExporter:         exporter,
+		DefaultSamplingPolicy: sampler,
+		Driver:                defaultDriver,
+	}
+	serverServer := server.New(options)
+	bucket, err := gcpBucket(ctx, cfg, httpClient)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	service, err := fs.Inject()
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	askService, err := ask.Inject()
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	renderService := render.Inject()
+	logService, err := log.InjectVerbose()
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	iioService, err := iio.Inject()
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	muxRouter := router.Inject()
+	commonApplication := newApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
+	return commonApplication, func() {
+		cleanup2()
+		cleanup()
+	}, nil
 }
 
-func NewRenderer() *render.Renderer {
-	renderConfig := render.NewConfig()
-	renderer := render.NewRenderer(renderConfig)
-	return renderer
+var (
+	_wireDefaultDriverValue = &server.DefaultDriver{}
+)
+
+// Injectors from inject_local.go:
+
+func SetupLocal(ctx context.Context, cfg *Config) (*application, func(), error) {
+	logger := _wireLoggerValue
+	db, err := dialLocalSQL(cfg)
+	if err != nil {
+		return nil, nil, err
+	}
+	v, cleanup := appHealthChecks(db)
+	exporter := _wireExporterValue
+	sampler := trace.AlwaysSample()
+	defaultDriver := _wireDefaultDriverValue
+	options := &server.Options{
+		RequestLogger:         logger,
+		HealthChecks:          v,
+		TraceExporter:         exporter,
+		DefaultSamplingPolicy: sampler,
+		Driver:                defaultDriver,
+	}
+	serverServer := server.New(options)
+	bucket, err := localBucket(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	service, err := fs.Inject()
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	askService, err := ask.Inject()
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	renderService := render.Inject()
+	logService, err := log.InjectVerbose()
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	iioService, err := iio.Inject()
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	muxRouter := router.Inject()
+	commonApplication := newApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
+	return commonApplication, func() {
+		cleanup()
+	}, nil
 }
 
-// inject.go:
+var (
+	_wireLoggerValue   = requestlog.Logger(nil)
+	_wireExporterValue = trace.Exporter(nil)
+)
 
-var DefaultSet = wire.NewSet(ask.DefaultSet, config.DefaultSet, fs.DefaultSet, iio.Set, exec.DefaultSet, log.VerboseSet, protoc.WrapperSet, render.Set)
+// inject_gcp.go:
+
+func gcpBucket(ctx context.Context, cfg *Config, client *gcp.HTTPClient) (*blob.Bucket, error) {
+	return gcsblob.OpenBucket(ctx, cfg.Bucket, client, nil)
+}
+
+func gcpSQLParams(id gcp.ProjectID, cfg *Config) *cloudmysql.Params {
+	return &cloudmysql.Params{
+		ProjectID: string(id),
+		Region:    cfg.CloudSqlRegion,
+		Instance:  cfg.DbHost,
+		Database:  cfg.DbName,
+		User:      cfg.DbUser,
+		Password:  cfg.DbPassword,
+	}
+}
+
+// inject_local.go:
+
+func localBucket(cfg *Config) (*blob.Bucket, error) {
+	return fileblob.OpenBucket(cfg.Bucket, nil)
+}
+
+func dialLocalSQL(c *Config) (*sql.DB, error) {
+	cfg := &mysql.Config{
+		Net:                  "tcp",
+		Addr:                 c.DbHost,
+		DBName:               c.DbName,
+		User:                 c.DbUser,
+		Passwd:               c.DbPassword,
+		AllowNativePasswords: true,
+	}
+	return sql.Open("mysql", cfg.FormatDSN())
+}

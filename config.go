@@ -1,8 +1,8 @@
-package config
+package common
 
 import (
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"log"
 	"os"
@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-type Service struct {
+type Config struct {
 	Bucket         string `mapstructure:"bucket"`
 	DbHost         string `mapstructure:"db_host"`
 	DbName         string `mapstructure:"db_name"`
@@ -19,34 +19,38 @@ type Service struct {
 	CloudSqlRegion string `mapstructure:"cloud_sql_region"`
 	Deploy         string `mapstructure:"deploy"`
 	Lis            string `mapstructure:"lis"`
+	Source         string `mapstructure:"source"`
+	Container      string `mapstructure:"container"`
+	SchemaPath     string `mapstructure:"schema_path"`
+	RolesPath      string `mapstructure:"roles_path"`
 	*viper.Viper
+	FlagSet *pflag.FlagSet
 }
 
-func (s *Service) Bind(cmd *cobra.Command) {
+func (s *Config) Bind(f *pflag.FlagSet) {
 	if err := s.Unmarshal(s); err != nil {
 		log.Fatal("failed to unmarshal config", errors.WithStack(err))
 	}
-
-	cmd.Flags().StringVar(&s.Deploy, "deploy", "local", "environment to deploy to")
-	cmd.Flags().StringVar(&s.Lis, "listen", ":8080", "port to listen for HTTP on")
-	cmd.Flags().StringVar(&s.Bucket, "bucket", "", "bucket name")
-	cmd.Flags().StringVar(&s.DbHost, "db_host", "", "database host or Cloud SQL instance name")
-	cmd.Flags().StringVar(&s.DbName, "db_name", "", "database name")
-	cmd.Flags().StringVar(&s.DbUser, "db_user", "", "database user")
-	cmd.Flags().StringVar(&s.DbPassword, "db_password", "", "database user password")
-	cmd.Flags().StringVar(&s.CloudSqlRegion, "cloud_sql_region", "", "region of the Cloud SQL instance (GCP only)")
-	if err := s.BindPFlags(cmd.Flags()); err != nil {
-		log.Fatal("failed to bind flags", errors.WithStack(err))
-	}
-
-	cmd.Annotations = s.Annotate()
-	cmd.Version = cmd.Annotations["version"]
+	s.FlagSet = f
+	f.StringVar(&s.Source, "source", ".", "directory containing source code")
+	f.StringVar(&s.Container, "container", "", "container name to build")
+	f.StringVar(&s.Deploy, "deploy", "local", "environment to deploy to")
+	f.StringVar(&s.Lis, "listen", ":8080", "port to listen for HTTP on")
+	f.StringVar(&s.Bucket, "bucket", "", "bucket name")
+	f.StringVar(&s.DbHost, "db_host", "", "database host or Cloud SQL instance name")
+	f.StringVar(&s.DbName, "db_name", "", "database name")
+	f.StringVar(&s.DbUser, "db_user", "", "database user")
+	f.StringVar(&s.DbPassword, "db_password", "", "database user password")
+	f.StringVar(&s.CloudSqlRegion, "cloud_sql_region", "", "region of the Cloud SQL instance (GCP only)")
 }
 
-func (s *Service) Init() error {
+func (s *Config) Init() error {
 	s.Viper = viper.GetViper()
 	if s.Viper == nil {
 		s.Viper = viper.New()
+	}
+	if err := s.Viper.ReadInConfig(); err != nil {
+		return errors.WithStack(err)
 	}
 
 	s.AutomaticEnv()
@@ -82,7 +86,7 @@ func (s *Service) Init() error {
 	return nil
 }
 
-func (s *Service) Annotate() map[string]string {
+func (s *Config) Annotate() map[string]string {
 	settings := s.AllSettings()
 	an := make(map[string]string)
 	for k, v := range settings {

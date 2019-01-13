@@ -1,8 +1,15 @@
+//+build wireinject
+
 package render
 
 import "github.com/google/wire"
 
-var Set = wire.NewSet(
+var Provider = wire.NewSet(
 	NewConfig,
 	NewRenderer,
 )
+
+func Inject() *Service {
+	wire.Build(Provider)
+	return &Service{}
+}

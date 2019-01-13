@@ -1,11 +1,10 @@
 //+build wireinject
 
-package cloud
+package common
 
 import (
 	"context"
 	"database/sql"
-	"github.com/gofunct/common/config"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
@@ -16,23 +15,23 @@ import (
 	"gocloud.dev/server"
 )
 
-func SetupLocal(ctx context.Context, cfg *config.Service) (*application, func(), error) {
+func SetupLocal(ctx context.Context, cfg *Config) (*application, func(), error) {
 	wire.Build(
 		wire.InterfaceValue(new(requestlog.Logger), requestlog.Logger(nil)),
 		wire.InterfaceValue(new(trace.Exporter), trace.Exporter(nil)),
 		server.Set,
-		applicationSet,
+		ApplicationSet,
 		dialLocalSQL,
 		localBucket,
 	)
 	return nil, nil, nil
 }
 
-func localBucket(cfg *config.Service) (*blob.Bucket, error) {
+func localBucket(cfg *Config) (*blob.Bucket, error) {
 	return fileblob.OpenBucket(cfg.Bucket, nil)
 }
 
-func dialLocalSQL(c *config.Service) (*sql.DB, error) {
+func dialLocalSQL(c *Config) (*sql.DB, error) {
 	cfg := &mysql.Config{
 		Net:                  "tcp",
 		Addr:                 c.DbHost,

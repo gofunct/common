@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"github.com/gofunct/common/fs/generator"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
 	"go.uber.org/zap"
@@ -18,11 +17,9 @@ var (
 )
 
 type Service struct {
-	Os        *afero.Afero
-	HttpFs    *afero.HttpFs
-	Root      RootDir
-	Generator *generator.Service
-	WalkFunc  filepath.WalkFunc
+	Os     *afero.Afero
+	HttpFs *afero.HttpFs
+	Root   RootDir
 }
 
 ///////////////////////////CHECK///////////////////////////
@@ -103,130 +100,6 @@ func (s *Service) OpenFile(path string, flag int, perm os.FileMode) (afero.File,
 	f, err := s.Os.Open(path)
 	zap.L().Debug("Opening file", zap.String("path", path), zap.Error(err))
 	return f, err
-}
-
-///////////////////////////WALK///////////////////////////
-
-func (s *Service) WalkRoot() error {
-	b, err := s.Os.IsEmpty(s.Root.String())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.root directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty root.root directory")
-	}
-	b, err = s.Os.Exists(s.Root.TemplatesDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.rppt directory exists")
-	}
-	if !b {
-		return errors.New("root.root directory is nonexistent")
-	}
-	err = s.Os.Walk(s.Root.String(), s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", s.Root.String()), zap.Error(err))
-	return err
-}
-
-func (s *Service) WalkTemplates() error {
-	b, err := s.Os.IsEmpty(s.Root.TemplatesDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.templates directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty root.templates directory")
-	}
-	b, err = s.Os.Exists(s.Root.TemplatesDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.templates directory exists")
-	}
-	if !b {
-		return errors.New("root.templates directory is nonexistent")
-	}
-
-	err = s.Os.Walk(s.Root.TemplatesDir(), s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", s.Root.TemplatesDir()), zap.Error(err))
-	return err
-}
-func (s *Service) WalkBin() error {
-	b, err := s.Os.IsEmpty(s.Root.BinDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.bin directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty root.bin directory")
-	}
-	b, err = s.Os.Exists(s.Root.BinDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.bin directory exists")
-	}
-	if !b {
-		return errors.New("root.bin directory is nonexistent")
-	}
-
-	err = s.Os.Walk(s.Root.BinDir(), s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", s.Root.BinDir()), zap.Error(err))
-	return err
-}
-
-func (s *Service) WalkCmd() error {
-	b, err := s.Os.IsEmpty(s.Root.CmdDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.cmd directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty root.cmd directory")
-	}
-	b, err = s.Os.Exists(s.Root.CmdDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.cmd directory exists")
-	}
-	if !b {
-		return errors.New("root.cmd directory is nonexistent")
-	}
-
-	err = s.Os.Walk(s.Root.CmdDir(), s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", s.Root.CmdDir()), zap.Error(err))
-	return err
-}
-
-func (s *Service) WalkProto() error {
-	b, err := s.Os.IsEmpty(s.Root.ProtoDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.proto directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty root.proto directory")
-	}
-	b, err = s.Os.Exists(s.Root.ProtoDir())
-	if err != nil {
-		return errors.Wrap(err, "failed to check if root.proto directory exists")
-	}
-	if !b {
-		return errors.New("root.proto directory is nonexistent")
-	}
-	err = s.Os.Walk(s.Root.ProtoDir(), s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", s.Root.ProtoDir()), zap.Error(err))
-	return err
-}
-
-func (s *Service) Walk(p string) error {
-	b, err := s.Os.IsEmpty(p)
-	if err != nil {
-		return errors.Wrap(err, "failed to check if directory is empty")
-	}
-	if b {
-		return errors.New("cannot walk an empty directory")
-	}
-	b, err = s.Os.Exists(p)
-	if err != nil {
-		return errors.Wrap(err, "failed to check if directory exists")
-	}
-	if !b {
-		return errors.New("cannot walk a non-existent directory")
-	}
-	err = s.Os.Walk(p, s.WalkFunc)
-	zap.L().Debug("Walking path with func", zap.String("path", p), zap.Error(err))
-	return err
 }
 
 ///////////////////////////LIST///////////////////////////

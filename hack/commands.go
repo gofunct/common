@@ -1,11 +1,11 @@
-package exec
+package hack
 
 import (
 	"go.uber.org/zap"
 	"os/exec"
 )
 
-func (s *Scripter) Gex(args ...string) []byte {
+func (s *Service) Gex(args ...string) []byte {
 	out, err := exec.Command("gex", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run gex", zap.Strings("args", args), zap.Error(err))
@@ -13,7 +13,7 @@ func (s *Scripter) Gex(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Git(args ...string) []byte {
+func (s *Service) Git(args ...string) []byte {
 	out, err := exec.Command("git", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run git", zap.Strings("args", args), zap.Error(err))
@@ -21,7 +21,7 @@ func (s *Scripter) Git(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Gcloud(args ...string) []byte {
+func (s *Service) Gcloud(args ...string) []byte {
 	out, err := exec.Command("gcloud", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run gcloud", zap.Strings("args", args), zap.Error(err))
@@ -29,7 +29,7 @@ func (s *Scripter) Gcloud(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Bash(args ...string) []byte {
+func (s *Service) Bash(args ...string) []byte {
 	out, err := exec.Command("bash", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run bash", zap.Strings("args", args), zap.Error(err))
@@ -37,7 +37,7 @@ func (s *Scripter) Bash(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Go(args ...string) []byte {
+func (s *Service) Go(args ...string) []byte {
 	out, err := exec.Command("go", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run go", zap.Strings("args", args), zap.Error(err))
@@ -45,7 +45,7 @@ func (s *Scripter) Go(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Stencil(args ...string) []byte {
+func (s *Service) Stencil(args ...string) []byte {
 	out, err := exec.Command("stencil", args...).Output()
 	if err != nil {
 		zap.L().Fatal("failed to run stencil", zap.Strings("args", args), zap.Error(err))
@@ -53,7 +53,7 @@ func (s *Scripter) Stencil(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Make(args ...string) []byte {
+func (s *Service) Make(args ...string) []byte {
 
 	out, err := exec.Command("make", args...).Output()
 	if err != nil {
@@ -62,7 +62,7 @@ func (s *Scripter) Make(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Docker(args ...string) []byte {
+func (s *Service) Docker(args ...string) []byte {
 
 	out, err := exec.Command("docker", args...).Output()
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *Scripter) Docker(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Kubectl(args ...string) []byte {
+func (s *Service) Kubectl(args ...string) []byte {
 
 	out, err := exec.Command("kubectl", args...).Output()
 	if err != nil {
@@ -80,7 +80,7 @@ func (s *Scripter) Kubectl(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Protoc(args ...string) []byte {
+func (s *Service) Protoc(args ...string) []byte {
 
 	out, err := exec.Command("protoc", args...).Output()
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *Scripter) Protoc(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Aws(args ...string) []byte {
+func (s *Service) Aws(args ...string) []byte {
 
 	out, err := exec.Command("aws", args...).Output()
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *Scripter) Aws(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Terraform(args ...string) []byte {
+func (s *Service) Terraform(args ...string) []byte {
 
 	out, err := exec.Command("terraform", args...).Output()
 	if err != nil {
@@ -107,7 +107,7 @@ func (s *Scripter) Terraform(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Ansible(args ...string) []byte {
+func (s *Service) Ansible(args ...string) []byte {
 
 	out, err := exec.Command("ansible", args...).Output()
 	if err != nil {
@@ -116,7 +116,7 @@ func (s *Scripter) Ansible(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Wire(args ...string) []byte {
+func (s *Service) Wire(args ...string) []byte {
 
 	out, err := exec.Command("wire", args...).Output()
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *Scripter) Wire(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Helm(args ...string) []byte {
+func (s *Service) Helm(args ...string) []byte {
 
 	out, err := exec.Command("helm", args...).Output()
 	if err != nil {
@@ -134,7 +134,7 @@ func (s *Scripter) Helm(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Sed(args ...string) []byte {
+func (s *Service) Sed(args ...string) []byte {
 
 	out, err := exec.Command("sed", args...).Output()
 	if err != nil {
@@ -143,7 +143,7 @@ func (s *Scripter) Sed(args ...string) []byte {
 	return out
 }
 
-func (s *Scripter) Grep(args ...string) []byte {
+func (s *Service) Grep(args ...string) []byte {
 
 	out, err := exec.Command("grep", args...).Output()
 	if err != nil {

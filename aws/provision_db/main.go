@@ -29,7 +29,7 @@ import (
 	"strings"
 )
 
-func main() {
+func Serve() error {
 	log.SetFlags(0)
 	log.SetPrefix("aws/provision_db: ")
 	host := flag.String("host", "", "hostname of database")
@@ -48,9 +48,7 @@ func main() {
 	if missing {
 		os.Exit(64)
 	}
-	if err := provisionDb(*host, *securityGroup, *database, *password, *schema); err != nil {
-		log.Fatal(err)
-	}
+	return provisionDb(*host, *securityGroup, *database, *password, *schema)
 }
 
 func provisionDb(dbHost, securityGroupID, dbName, dbPassword, schemaPath string) error {

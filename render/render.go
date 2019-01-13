@@ -20,18 +20,18 @@ func NewConfig() *Config {
 	return c
 }
 
-type Renderer struct {
+type Service struct {
 	*Config
 	Buffer *bytes.Buffer
 }
 
-func NewRenderer(config *Config) *Renderer {
-	return &Renderer{
+func NewRenderer(config *Config) *Service {
+	return &Service{
 		Config: config,
 		Buffer: hero.GetBuffer(),
 	}
 }
 
-func (r *Renderer) Generate() {
+func (r *Service) Generate() {
 	hero.Generate(r.Source, r.Dest, r.PkgName)
 }

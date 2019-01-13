@@ -1,36 +1,34 @@
-package exec
+package hack
 
 import (
 	"github.com/gofunct/iio"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"io"
 	"os/user"
 )
 
 // Wraps exec.Cmd so we can capture errors.
-type Scripter struct {
+type Service struct {
 	io *iio.Service
-	v  *viper.Viper
 }
 
-func (s *Scripter) Output() []byte {
+func (s *Service) Output() []byte {
 	return s.Output()
 }
 
-func (s *Scripter) SetStdin(in io.Reader) {
+func (s *Service) SetStdin(in io.Reader) {
 	s.io.InR = in
 }
 
-func (s *Scripter) SetStdout(out io.Writer) {
+func (s *Service) SetStdout(out io.Writer) {
 	s.io.OutW = out
 }
 
-func (s *Scripter) SetStderr(out io.Writer) {
+func (s *Service) SetStderr(out io.Writer) {
 	s.io.ErrW = out
 }
 
-func (s *Scripter) RequireRoot() error {
+func (s *Service) RequireRoot() error {
 	u, err := user.Current()
 	if err != nil {
 		return errors.Wrapf(err, "%s\n", "failed to look up current user")
