@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"github.com/gofunct/common/ask"
 	"github.com/gofunct/common/fs"
-	"github.com/gofunct/common/hack"
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/common/render"
 	"github.com/gofunct/common/router"
@@ -30,7 +29,6 @@ func newApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, config 
 		bucket:   bucket,
 		Config:   config,
 		FS:       fs,
-		Scripter: nil,
 		Q:        q,
 		Renderer: r,
 		L:        l,
@@ -51,7 +49,6 @@ var CommonSet = wire.NewSet(
 	ask.Inject,
 	fs.Inject,
 	iio.Inject,
-	hack.Inject,
 	log.InjectVerbose,
 	router.Inject,
 	render.Inject,

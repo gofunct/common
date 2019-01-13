@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gofunct/common/ask"
 	"github.com/gofunct/common/fs"
-	"github.com/gofunct/common/hack"
 	"github.com/gofunct/common/log"
 	"github.com/gofunct/common/render"
 	"github.com/gofunct/iio"
@@ -31,7 +30,6 @@ type application struct {
 	bucket   *blob.Bucket
 	Config   *Config
 	FS       *fs.Service
-	Scripter *hack.Service
 	Q        *ask.Service
 	Renderer *render.Service
 	L        *log.Service
