@@ -10,6 +10,7 @@ import (
 	"contrib.go.opencensus.io/exporter/stackdriver/monitoredresource"
 	"database/sql"
 	"github.com/go-sql-driver/mysql"
+	"github.com/gofunct/common/config"
 	"go.opencensus.io/trace"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/fileblob"
@@ -18,15 +19,13 @@ import (
 	"gocloud.dev/gcp/cloudsql"
 	"gocloud.dev/mysql/cloudmysql"
 	"gocloud.dev/requestlog"
-	"gocloud.dev/runtimevar"
-	"gocloud.dev/runtimevar/filevar"
 	"gocloud.dev/server"
 	"gocloud.dev/server/sdserver"
 )
 
 // Injectors from inject_gcp.go:
 
-func SetupGCP(ctx context.Context, flags *cliFlags) (*application, func(), error) {
+func SetupGCP(ctx context.Context, cfg *config.Service) (*application, func(), error) {
 	stackdriverLogger := sdserver.NewRequestLogger()
 	roundTripper := gcp.DefaultTransport()
 	credentials, err := gcp.DefaultCredentials(ctx)
@@ -43,12 +42,12 @@ func SetupGCP(ctx context.Context, flags *cliFlags) (*application, func(), error
 	if err != nil {
 		return nil, nil, err
 	}
-	params := gcpSQLParams(projectID, flags)
+	params := gcpSQLParams(projectID, cfg)
 	db, err := cloudmysql.Open(ctx, remoteCertSource, params)
 	if err != nil {
 		return nil, nil, err
 	}
-	v, cleanup := AppHealthChecks(db)
+	v, cleanup := appHealthChecks(db)
 	monitoredresourceInterface := monitoredresource.Autodetect()
 	exporter, cleanup2, err := sdserver.NewExporter(projectID, tokenSource, monitoredresourceInterface)
 	if err != nil {
@@ -65,13 +64,13 @@ func SetupGCP(ctx context.Context, flags *cliFlags) (*application, func(), error
 		Driver:                defaultDriver,
 	}
 	serverServer := server.New(options)
-	bucket, err := gcpBucket(ctx, flags, httpClient)
+	bucket, err := gcpBucket(ctx, cfg, httpClient)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	cloudApplication := NewApplication(serverServer, db, bucket)
+	cloudApplication := newApplication(serverServer, db, bucket)
 	return cloudApplication, func() {
 		cleanup2()
 		cleanup()
@@ -84,13 +83,13 @@ var (
 
 // Injectors from inject_local.go:
 
-func SetupLocal(ctx context.Context, flags *cliFlags) (*application, func(), error) {
+func SetupLocal(ctx context.Context, cfg *config.Service) (*application, func(), error) {
 	logger := _wireLoggerValue
-	db, err := dialLocalSQL(flags)
+	db, err := dialLocalSQL(cfg)
 	if err != nil {
 		return nil, nil, err
 	}
-	v, cleanup := AppHealthChecks(db)
+	v, cleanup := appHealthChecks(db)
 	exporter := _wireExporterValue
 	sampler := trace.AlwaysSample()
 	defaultDriver := _wireDefaultDriverValue
@@ -102,12 +101,12 @@ func SetupLocal(ctx context.Context, flags *cliFlags) (*application, func(), err
 		Driver:                defaultDriver,
 	}
 	serverServer := server.New(options)
-	bucket, err := localBucket(flags)
+	bucket, err := localBucket(cfg)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	cloudApplication := NewApplication(serverServer, db, bucket)
+	cloudApplication := newApplication(serverServer, db, bucket)
 	return cloudApplication, func() {
 		cleanup()
 	}, nil
@@ -120,56 +119,35 @@ var (
 
 // inject_gcp.go:
 
-// gcpBucket is a Wire provider function that returns the GCS bucket based on
-// the command-line flags.
-func gcpBucket(ctx context.Context, flags *cliFlags, client *gcp.HTTPClient) (*blob.Bucket, error) {
-	return gcsblob.OpenBucket(ctx, flags.bucket, client, nil)
+func gcpBucket(ctx context.Context, cfg *config.Service, client *gcp.HTTPClient) (*blob.Bucket, error) {
+	return gcsblob.OpenBucket(ctx, cfg.Bucket, client, nil)
 }
 
-// gcpSQLParams is a Wire provider function that returns the Cloud SQL
-// connection parameters based on the command-line flags. Other providers inside
-// gcpcloud.GCP use the parameters to construct a *sql.DB.
-func gcpSQLParams(id gcp.ProjectID, flags *cliFlags) *cloudmysql.Params {
+func gcpSQLParams(id gcp.ProjectID, cfg *config.Service) *cloudmysql.Params {
 	return &cloudmysql.Params{
 		ProjectID: string(id),
-		Region:    flags.cloudSQLRegion,
-		Instance:  flags.dbHost,
-		Database:  flags.dbName,
-		User:      flags.dbUser,
-		Password:  flags.dbPassword,
+		Region:    cfg.CloudSqlRegion,
+		Instance:  cfg.DbHost,
+		Database:  cfg.DbName,
+		User:      cfg.DbUser,
+		Password:  cfg.DbPassword,
 	}
 }
 
 // inject_local.go:
 
-// localBucket is a Wire provider function that returns a directory-based bucket
-// based on the command-line flags.
-func localBucket(flags *cliFlags) (*blob.Bucket, error) {
-	return fileblob.OpenBucket(flags.bucket, nil)
+func localBucket(cfg *config.Service) (*blob.Bucket, error) {
+	return fileblob.OpenBucket(cfg.Bucket, nil)
 }
 
-// dialLocalSQL is a Wire provider function that connects to a MySQL database
-// (usually on localhost).
-func dialLocalSQL(flags *cliFlags) (*sql.DB, error) {
+func dialLocalSQL(c *config.Service) (*sql.DB, error) {
 	cfg := &mysql.Config{
 		Net:                  "tcp",
-		Addr:                 flags.dbHost,
-		DBName:               flags.dbName,
-		User:                 flags.dbUser,
-		Passwd:               flags.dbPassword,
+		Addr:                 c.DbHost,
+		DBName:               c.DbName,
+		User:                 c.DbUser,
+		Passwd:               c.DbPassword,
 		AllowNativePasswords: true,
 	}
 	return sql.Open("mysql", cfg.FormatDSN())
-}
-
-// localRuntimeVar is a Wire provider function that returns the Message of the
-// Day variable based on a local file.
-func localRuntimeVar(flags *cliFlags) (*runtimevar.Variable, func(), error) {
-	v, err := filevar.New(flags.motdVar, runtimevar.StringDecoder, &filevar.Options{
-		WaitDuration: flags.motdVarWaitTime,
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-	return v, func() { v.Close() }, nil
 }

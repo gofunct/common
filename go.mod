@@ -2,7 +2,7 @@ module github.com/gofunct/common
 
 require (
 	contrib.go.opencensus.io/exporter/aws v0.0.0-20181029163544-2befc13012d0 // indirect
-	contrib.go.opencensus.io/exporter/stackdriver v0.8.0 // indirect
+	contrib.go.opencensus.io/exporter/stackdriver v0.8.0
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
 	github.com/Masterminds/sprig v2.17.1+incompatible
