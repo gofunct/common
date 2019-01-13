@@ -1,67 +1,42 @@
 package exec
 
 import (
-	"github.com/gofunct/iio"
+	"fmt"
 	"github.com/google/wire"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"os"
-	"os/exec"
+	"strings"
 )
 
 // New returns a new Interface which will os/exec to run commands.
-func New(name string, i *iio.Service, args ...string) Interface {
-	return &Scripter{
-		Cmd: exec.Cmd{
-			Path:   name,
-			Args:   args,
-			Env:    viper.GetStringSlice("env"),
-			Dir:    os.Getenv("PWD"),
-			Stdin:  i.In(),
-			Stdout: i.Out(),
-			Stderr: i.Err(),
-		},
+func NewCommander(s *Scripter) *cobra.Command {
+	c := &cobra.Command{
+		Use:         s.Name,
+		Short:       s.Usage,
+		Annotations: envtoAnnotations(s.OS.Env),
 	}
+	if s.RunFunc != nil {
+		c.RunE = func(cmd *cobra.Command, args []string) error {
+			return s.Execute(args...)
+		}
+	}
+	c.SetOutput(s.IO.OutW)
+	return c
 }
 
 var DefaultSet = wire.NewSet(
-	New,
+	NewCommander,
 )
 
-func NewCobraCommand() *cobra.Command {
-	return &cobra.Command{
-		Use:                        "",
-		Aliases:                    nil,
-		SuggestFor:                 nil,
-		Short:                      "",
-		Long:                       "",
-		Example:                    "",
-		ValidArgs:                  nil,
-		Args:                       nil,
-		ArgAliases:                 nil,
-		BashCompletionFunction:     "",
-		Deprecated:                 "",
-		Hidden:                     false,
-		Annotations:                nil,
-		Version:                    "",
-		PersistentPreRun:           nil,
-		PersistentPreRunE:          nil,
-		PreRun:                     nil,
-		PreRunE:                    nil,
-		Run:                        nil,
-		RunE:                       nil,
-		PostRun:                    nil,
-		PostRunE:                   nil,
-		PersistentPostRun:          nil,
-		PersistentPostRunE:         nil,
-		SilenceErrors:              false,
-		SilenceUsage:               false,
-		DisableFlagParsing:         false,
-		DisableAutoGenTag:          false,
-		DisableFlagsInUseLine:      false,
-		DisableSuggestions:         false,
-		SuggestionsMinimumDistance: 0,
-		TraverseChildren:           false,
-		FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+func envtoAnnotations(e []string) map[string]string {
+	var a = make(map[string]string)
+
+	for _, str := range e {
+
+		sli := strings.Split(str, "=")
+		a[sli[0]] = sli[1]
 	}
+	for k, v := range a {
+		fmt.Println(k, v)
+	}
+	return a
 }
