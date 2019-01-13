@@ -13,7 +13,6 @@ import (
 	"github.com/google/wire"
 	"github.com/izumin5210/grapi/pkg/protoc"
 	"github.com/jessevdk/go-assets"
-	"github.com/spf13/cobra"
 	"path/filepath"
 )
 
@@ -51,9 +50,9 @@ func NewLog() (*log.Service, error) {
 	return &log.Service{}, nil
 }
 
-func NewCommander(s *exec.Scripter) *cobra.Command {
+func NewScripter() *exec.Scripter {
 	wire.Build(DefaultSet)
-	return exec.NewCommander(s)
+	return &exec.Scripter{}
 }
 
 ////////

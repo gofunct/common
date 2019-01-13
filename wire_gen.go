@@ -17,7 +17,6 @@ import (
 	"github.com/google/wire"
 	"github.com/izumin5210/grapi/pkg/protoc"
 	"github.com/jessevdk/go-assets"
-	"github.com/spf13/cobra"
 	"path/filepath"
 )
 
@@ -56,9 +55,9 @@ func NewLog() (*log.Service, error) {
 	return service, nil
 }
 
-func NewCommander(s *exec.Scripter) *cobra.Command {
-	command := exec.NewCommander(s)
-	return command
+func NewScripter() *exec.Scripter {
+	scripter := exec.NewScripter()
+	return scripter
 }
 
 func NewVerboseLog() (*log.Service, error) {

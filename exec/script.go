@@ -2,48 +2,42 @@ package exec
 
 import (
 	"github.com/gofunct/iio"
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"io"
-	osexec "os/exec"
+	"os/user"
 )
 
 // Wraps exec.Cmd so we can capture errors.
 type Scripter struct {
-	Name    string
-	Usage   string
-	IO      iio.Service
-	RunFunc func(s *Scripter, args ...string) error
-	OS      osexec.Cmd
+	io *iio.Service
+	v  *viper.Viper
 }
 
 func (s *Scripter) Output() []byte {
 	return s.Output()
 }
 
-func (s *Scripter) Execute(args ...string) error {
-
-	return s.RunFunc(s, args...)
-}
-
-func (s *Scripter) SetDir(dir string) {
-	s.OS.Dir = dir
-}
-
 func (s *Scripter) SetStdin(in io.Reader) {
-	s.IO.InR = in
+	s.io.InR = in
 }
 
 func (s *Scripter) SetStdout(out io.Writer) {
-	s.IO.OutW = out
+	s.io.OutW = out
 }
 
 func (s *Scripter) SetStderr(out io.Writer) {
-	s.IO.ErrW = out
+	s.io.ErrW = out
 }
 
-func (s *Scripter) SetEnv(env []string) {
-	s.OS.Env = env
-}
+func (s *Scripter) RequireRoot() error {
+	u, err := user.Current()
+	if err != nil {
+		return errors.Wrapf(err, "%s\n", "failed to look up current user")
+	}
+	if u.Name != "root" {
+		return errors.Wrapf(err, "%s\n", "root user is required")
+	}
 
-func (s *Scripter) GetArgs() []string {
-	return s.OS.Args
+	return nil
 }
