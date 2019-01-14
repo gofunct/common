@@ -11,6 +11,7 @@ import (
 	"github.com/gofunct/iio"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"gocloud.dev/blob"
 	"gocloud.dev/server"
@@ -134,4 +135,27 @@ func (app *application) RunLocalDb() {
 	if err := app.SetupLocalDb(); err != nil {
 		zap.L().Fatal("failed to run local db", zap.Error(errors.WithStack(err)))
 	}
+}
+
+func (app *application) BindCobra(c *cobra.Command) (*cobra.Command, error) {
+	c.Flags().AddFlagSet(app.Config.FlagSet)
+	if err := app.Config.BindPFlags(c.Flags()); err != nil {
+		return nil, errors.WithStack(err)
+	}
+	c.Annotations = app.Config.Annotate()
+	c.SetUsageFunc(func(cmd *cobra.Command) error {
+		cmd.DebugFlags()
+		fmt.Println("command:", cmd.Use)
+		fmt.Println("aliases:", cmd.Aliases)
+		fmt.Println("annotations:", cmd.Annotations)
+		fmt.Println("version:", cmd.Version)
+		fmt.Println("valid_args:", cmd.ValidArgs)
+		fmt.Println("example:", cmd.Example)
+		fmt.Println("commands:", cmd.Commands())
+		fmt.Println("runnable:", cmd.Runnable())
+
+
+		return nil
+	})
+	return c, nil
 }
