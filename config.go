@@ -3,11 +3,17 @@ package common
 import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"log"
 	"os"
 	"os/user"
 	"runtime"
+	"github.com/mitchellh/go-homedir"
 )
-
+var (
+	// Find home directory.
+	home, _ = homedir.Dir()
+)
 type Config struct {
 	Bucket         string `mapstructure:"bucket"`
 	DbHost         string `mapstructure:"db_host"`
@@ -29,20 +35,19 @@ type Config struct {
 
 func NewConfig() (*Config, error) {
 	s := &Config{}
-	s.Viper = viper.GetViper()
-	if s.Viper == nil {
-		s.Viper = viper.New()
-	}
-
-	s.AutomaticEnv()
+	s.Viper = viper.New()
 
 	ex, err := os.Executable()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	s.AddConfigPath(home)
+	s.SetConfigName(".common")
+	s.AutomaticEnv()
+
+	s.SetDefault("home", home)
 	s.SetDefault("executable", ex)
 	gr, err := os.Getgroups()
-
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -64,13 +69,26 @@ func NewConfig() (*Config, error) {
 	s.SetDefault("goroot", runtime.GOROOT())
 	usr, _ := user.Current()
 	s.SetDefault("user", usr)
+
 	if err := s.Unmarshal(s); err != nil {
 		return nil, errors.WithStack(err)
 	}
-	if err := s.WriteConfig(); err != nil {
-		return s, errors.WithStack(err)
-	}
 
+	// If a config file is found, read it in.
+	if err := s.ReadInConfig(); err != nil {
+		log.Println("failed to read config file, writing defaults...")
+		if err := s.WriteConfigAs(".common.yaml"); err != nil {
+			return nil, errors.WithStack(err)
+		} else {
+			return nil, errors.New("CONFIG WRITTEN TO CURRENT DIRECTORY- .common.yaml \nPLEASE MOVE CONFIG TO HOME DIRECTORY")
+		}
+
+	} else {
+		log.Println("Using config file-->", zap.String("config_file", s.ConfigFileUsed()))
+		if err := s.WriteConfig(); err != nil {
+			return nil, errors.WithStack(err)
+		}
+	}
 
 	return s, nil
 }
