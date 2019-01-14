@@ -1,74 +1,40 @@
+//+build wireinject
+
 package common
 
 import (
-	"database/sql"
-	"github.com/gofunct/common/ask"
-	"github.com/gofunct/common/fs"
-	"github.com/gofunct/common/log"
-	"github.com/gofunct/common/render"
-	"github.com/gofunct/common/router"
-	"github.com/gofunct/iio"
+	"context"
 	"github.com/google/wire"
-	"github.com/gorilla/mux"
-	"github.com/spf13/pflag"
-	"go.opencensus.io/trace"
 	"gocloud.dev/blob"
-	"gocloud.dev/health"
-	"gocloud.dev/health/sqlhealth"
-	"gocloud.dev/server"
+	"gocloud.dev/blob/gcsblob"
+	"gocloud.dev/gcp"
+	"gocloud.dev/gcp/gcpcloud"
+	"gocloud.dev/mysql/cloudmysql"
 )
 
-// newApplication creates a new Application struct based on the backends and the message
-// of the day variable.
-func NewApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, config *Config, fs *fs.Service, q *ask.Service, r *render.Service, l *log.Service, i *iio.Service, rout *mux.Router) *Application {
-	app := &Application{
-		srv:      srv,
-		db:       db,
-		bucket:   bucket,
-		Config:   config,
-		FS:       fs,
-		Q:        q,
-		Renderer: r,
-		L:        l,
-		IO:       i,
-		Router:   rout,
-	}
-	return app
+func gcpBucket(ctx context.Context, cfg *Config, client *gcp.HTTPClient) (*blob.Bucket, error) {
+	return gcsblob.OpenBucket(ctx, cfg.Bucket, client, nil)
 }
 
-var ApplicationSet = wire.NewSet(
-	NewApplication,
-	AppHealthChecks,
-	trace.AlwaysSample,
-	CommonSet,
-)
-
-var CommonSet = wire.NewSet(
-	ask.Inject,
-	fs.Inject,
-	iio.Inject,
-	log.InjectVerbose,
-	router.Inject,
-	render.Inject,
-)
-
-func NewConfig(set *pflag.FlagSet) (*Config, error) {
-	c := &Config{}
-	if err := c.Init(); err != nil {
-		return nil, err
+func gcpSQLParams(id gcp.ProjectID, cfg *Config) *cloudmysql.Params {
+	return &cloudmysql.Params{
+		ProjectID: string(id),
+		Region:    cfg.CloudSqlRegion,
+		Instance:  cfg.DbHost,
+		Database:  cfg.DbName,
+		User:      cfg.DbUser,
+		Password:  cfg.DbPassword,
 	}
-	c.Bind(set)
-	if err := c.BindPFlags(c.FlagSet); err != nil {
-		return nil, err
-	}
-
-	return c, nil
 }
 
-func AppHealthChecks(db *sql.DB) ([]health.Checker, func()) {
-	dbCheck := sqlhealth.New(db)
-	list := []health.Checker{dbCheck}
-	return list, func() {
-		dbCheck.Stop()
-	}
+func InjectApp(ctx context.Context) (*Application, func(), error) {
+	wire.Build(
+		ApplicationSet,
+		NewConfig,
+		gcpcloud.GCP,
+		cloudmysql.Open,
+		gcpSQLParams,
+		gcpBucket,
+	)
+	return nil, nil, nil
 }

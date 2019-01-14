@@ -2,9 +2,7 @@ package common
 
 import (
 	"github.com/pkg/errors"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 	"os/user"
 	"runtime"
@@ -23,52 +21,38 @@ type Config struct {
 	Container      string `mapstructure:"container"`
 	SchemaPath     string `mapstructure:"schema_path"`
 	RolesPath      string `mapstructure:"roles_path"`
+	GenSource      string `mapstructure:"gen_source"`
+	GenDest        string `mapstructure:"gen_dest"`
+	GenPkgName     string `mapstructure:"gen_pkg_name"`
 	*viper.Viper
-	FlagSet *pflag.FlagSet
 }
 
-func (s *Config) Bind(f *pflag.FlagSet) {
-	if err := s.Unmarshal(s); err != nil {
-		log.Fatal("failed to unmarshal config", errors.WithStack(err))
-	}
-	s.FlagSet = f
-	f.StringVar(&s.Source, "source", ".", "directory containing source code")
-	f.StringVar(&s.Container, "container", "", "container name to build")
-	f.StringVar(&s.Deploy, "deploy", "local", "environment to deploy to")
-	f.StringVar(&s.Lis, "listen", ":8080", "port to listen for HTTP on")
-	f.StringVar(&s.Bucket, "bucket", "", "bucket name")
-	f.StringVar(&s.DbHost, "db_host", "", "database host or Cloud SQL instance name")
-	f.StringVar(&s.DbName, "db_name", "", "database name")
-	f.StringVar(&s.DbUser, "db_user", "", "database user")
-	f.StringVar(&s.DbPassword, "db_password", "", "database user password")
-	f.StringVar(&s.CloudSqlRegion, "cloud_sql_region", "", "region of the Cloud SQL instance (GCP only)")
-}
-
-func (s *Config) Init() error {
+func NewConfig() (*Config, error) {
+	s := &Config{}
 	s.Viper = viper.GetViper()
 	if s.Viper == nil {
 		s.Viper = viper.New()
 	}
 	if err := s.Viper.ReadInConfig(); err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	s.AutomaticEnv()
 
 	ex, err := os.Executable()
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 	s.SetDefault("executable", ex)
 	gr, err := os.Getgroups()
 
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 	s.SetDefault("groups", gr)
 	host, err := os.Hostname()
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	s.SetDefault("env", os.Environ())
@@ -83,7 +67,11 @@ func (s *Config) Init() error {
 	s.SetDefault("goroot", runtime.GOROOT())
 	usr, _ := user.Current()
 	s.SetDefault("user", usr)
-	return nil
+	if err := s.Unmarshal(s); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return s, nil
 }
 
 func (s *Config) Annotate() map[string]string {

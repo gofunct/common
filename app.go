@@ -4,157 +4,104 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/gofunct/common/ask"
-	"github.com/gofunct/common/fs"
-	"github.com/gofunct/common/log"
-	"github.com/gofunct/common/render"
-	"github.com/gofunct/iio"
+	"github.com/google/wire"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
+	"github.com/mattn/go-colorable"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/shiyanhui/hero"
+	"github.com/spf13/afero"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"gocloud.dev/blob"
+	"gocloud.dev/health"
+	"gocloud.dev/health/sqlhealth"
 	"gocloud.dev/server"
-	"gopkg.in/pipe.v2"
-	"io/ioutil"
+	"net/http"
+	"net/http/pprof"
 	"os"
 	"os/exec"
-	"os/signal"
-	"path/filepath"
+	"runtime"
 	"strings"
-	"time"
 )
 
 type Application struct {
-	srv          *server.Server
-	db           *sql.DB
-	bucket       *blob.Bucket
-	Config       *Config
-	FS           *fs.Service
-	Q            *ask.Service
-	Renderer     *render.Service
-	L            *log.Service
-	IO           *iio.Service
-	Router       *mux.Router
-	PrivateKeyID string `json:"private_key_id"`
+	Server  *server.Server
+	Db      *sql.DB
+	Bucket  *blob.Bucket
+	Config  *Config
+	Os      *afero.Afero
+	Z       *zap.Logger
+	IO      *IO
+	Router  *mux.Router
+	RunFunc func(context.Context, *Application) error
 }
 
-func (a *Application) SetupLocalDb() error {
-	image := "mysql:5.6"
+var ApplicationSet = wire.NewSet(
+	NewApplication,
+	AppHealthChecks,
+	trace.AlwaysSample,
+)
 
-	zap.L().Debug("Starting container running MySQL")
-	dockerArgs := []string{"run", "--rm"}
-	if a.Config.Container != "" {
-		dockerArgs = append(dockerArgs, "--name", a.Config.Container)
+func NewApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, cfg *Config) *Application {
+	l, _ := zap.NewDevelopment()
+	zap.ReplaceGlobals(l)
+	l.With(
+		zap.String("user", os.Getenv("USER")),
+		zap.Int("cpus", runtime.NumCPU()),
+		zap.Int("routines", runtime.NumGoroutine()))
+
+	a := &afero.Afero{
+		Fs: afero.NewOsFs(),
 	}
-	dockerArgs = append(dockerArgs,
-		"--env", "MYSQL_DATABASE="+a.Config.DbName,
-		"--env", "MYSQL_ROOT_PASSWORD="+a.Config.DbPassword,
-		"--detach",
-		"--publish", "3306:3306",
-		image)
-	cmd := exec.Command("docker", dockerArgs...)
+	router := mux.NewRouter()
+	router.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+	router.Handle("/debug/pprof/cmdline", http.HandlerFunc(pprof.Cmdline))
+	router.Handle("/debug/pprof/profile", http.HandlerFunc(pprof.Profile))
+	router.Handle("/debug/pprof/symbol", http.HandlerFunc(pprof.Symbol))
+	router.Handle("/debug/pprof/trace", http.HandlerFunc(pprof.Trace))
+	router.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
+	app := &Application{
+		Server: srv,
+		Db:     db,
+		Bucket: bucket,
+		Config: cfg,
+		Os:     a,
+		Z:      l,
+		IO: &IO{
+			InR:  os.Stdin,
+			OutW: colorable.NewColorableStdout(),
+			ErrW: colorable.NewColorableStderr(),
+		},
+		Router:  router,
+		RunFunc: nil,
+	}
+	return app
+}
+
+func (a *Application) Generate() {
+	hero.Generate(a.Config.GenSource, a.Config.GenDest, a.Config.GenPkgName)
+}
+
+func (a *Application) Shell(args ...string) (stdout string, err error) {
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stderr = os.Stderr
-	out, err := cmd.Output()
+	cmd.Env = append(cmd.Env, os.Environ()...)
+	stdoutb, err := cmd.Output()
 	if err != nil {
-		return fmt.Errorf("running %v: %v: %s", cmd.Args, err, out)
+		return "", fmt.Errorf("running %v: %v", cmd.Args, err)
 	}
-	containerID := strings.TrimSpace(string(out))
-	defer func() {
-		zap.L().Debug("killing", zap.String("container", containerID))
-		stop := exec.Command("docker", "kill", containerID)
-		stop.Stderr = os.Stderr
-		if err := stop.Run(); err != nil {
-			zap.L().Debug("failed to kill db container", zap.Error(err))
-
-		}
-	}()
-
-	// Stop the container on Ctrl-C.
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		c := make(chan os.Signal, 1)
-		// TODO(ijt): Handle SIGTERM.
-		signal.Notify(c, os.Interrupt)
-		<-c
-		cancel()
-	}()
-
-	nap := 10 * time.Second
-	zap.L().Debug("Waiting %v for database to come up", zap.Duration("nap", nap))
-	select {
-	case <-time.After(nap):
-		// ok
-	case <-ctx.Done():
-		return errors.New("interrupted while napping")
-	}
-	zap.L().Debug("Initializing database schema and users")
-	schema, err := ioutil.ReadFile(filepath.Join(a.Config.Source, "schema.sql"))
-	if err != nil {
-		return fmt.Errorf("reading schema: %v", err)
-	}
-	roles, err := ioutil.ReadFile(filepath.Join(a.Config.Source, "roles.sql"))
-	if err != nil {
-		return fmt.Errorf("reading roles: %v", err)
-	}
-	tooMany := 10
-	var i int
-	for i = 0; i < tooMany; i++ {
-		mySQL := `mysql -h"${MYSQL_PORT_3306_TCP_ADDR?}" -P"${MYSQL_PORT_3306_TCP_PORT?}" -uroot -ppassword guestbook`
-		p := pipe.Line(
-			pipe.Read(strings.NewReader(string(schema)+string(roles))),
-			pipe.Exec("docker", "run", "--rm", "--interactive", "--link", containerID+":mysql", image, "sh", "-c", mySQL),
-		)
-		if _, stderr, err := pipe.DividedOutput(p); err != nil {
-			zap.L().Debug("Failed to seed database, retrying", zap.Any("stderr", stderr))
-			select {
-			case <-time.After(time.Second):
-				continue
-			case <-ctx.Done():
-				return errors.New("interrupted while napping in between database seeding attempts")
-			}
-		}
-		break
-	}
-	if i == tooMany {
-		return fmt.Errorf("gave up after %d tries to seed database", i)
-	}
-	zap.L().Debug("Database running at localhost:3306")
-	attach := exec.CommandContext(ctx, "docker", "attach", containerID)
-	attach.Stdout = os.Stdout
-	attach.Stderr = os.Stderr
-	if err := attach.Run(); err != nil {
-		return fmt.Errorf("running %v: %q", attach.Args, err)
-	}
-
-	return nil
+	return strings.TrimSpace(string(stdoutb)), nil
 }
 
-func (app *Application) RunLocalDb() {
-
-	if err := app.SetupLocalDb(); err != nil {
-		zap.L().Fatal("failed to run local db", zap.Error(errors.WithStack(err)))
-	}
+func (a *Application) Execute(ctx context.Context) error {
+	return a.RunFunc(ctx, a)
 }
 
-func (app *Application) BindCobra(c *cobra.Command) (*cobra.Command, error) {
-	c.Flags().AddFlagSet(app.Config.FlagSet)
-	if err := app.Config.BindPFlags(c.Flags()); err != nil {
-		return nil, errors.WithStack(err)
+func AppHealthChecks(db *sql.DB) ([]health.Checker, func()) {
+	dbCheck := sqlhealth.New(db)
+	list := []health.Checker{dbCheck}
+	return list, func() {
+		dbCheck.Stop()
 	}
-	c.Annotations = app.Config.Annotate()
-	c.SetUsageFunc(func(cmd *cobra.Command) error {
-		cmd.DebugFlags()
-		fmt.Println("command:", cmd.Use)
-		fmt.Println("aliases:", cmd.Aliases)
-		fmt.Println("annotations:", cmd.Annotations)
-		fmt.Println("version:", cmd.Version)
-		fmt.Println("valid_args:", cmd.ValidArgs)
-		fmt.Println("example:", cmd.Example)
-		fmt.Println("commands:", cmd.Commands())
-		fmt.Println("runnable:", cmd.Runnable())
-
-		return nil
-	})
-	return c, nil
 }
