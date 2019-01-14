@@ -25,16 +25,17 @@ import (
 )
 
 type application struct {
-	srv      *server.Server
-	db       *sql.DB
-	bucket   *blob.Bucket
-	Config   *Config
-	FS       *fs.Service
-	Q        *ask.Service
-	Renderer *render.Service
-	L        *log.Service
-	IO       *iio.Service
-	Router   *mux.Router
+	srv          *server.Server
+	db           *sql.DB
+	bucket       *blob.Bucket
+	Config       *Config
+	FS           *fs.Service
+	Q            *ask.Service
+	Renderer     *render.Service
+	L            *log.Service
+	IO           *iio.Service
+	Router       *mux.Router
+	PrivateKeyID string `json:"private_key_id"`
 }
 
 func (a *application) SetupLocalDb() error {
