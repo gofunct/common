@@ -25,7 +25,7 @@ import (
 	"time"
 )
 
-type application struct {
+type Application struct {
 	srv          *server.Server
 	db           *sql.DB
 	bucket       *blob.Bucket
@@ -39,7 +39,7 @@ type application struct {
 	PrivateKeyID string `json:"private_key_id"`
 }
 
-func (a *application) SetupLocalDb() error {
+func (a *Application) SetupLocalDb() error {
 	image := "mysql:5.6"
 
 	zap.L().Debug("Starting container running MySQL")
@@ -130,14 +130,14 @@ func (a *application) SetupLocalDb() error {
 	return nil
 }
 
-func (app *application) RunLocalDb() {
+func (app *Application) RunLocalDb() {
 
 	if err := app.SetupLocalDb(); err != nil {
 		zap.L().Fatal("failed to run local db", zap.Error(errors.WithStack(err)))
 	}
 }
 
-func (app *application) BindCobra(c *cobra.Command) (*cobra.Command, error) {
+func (app *Application) BindCobra(c *cobra.Command) (*cobra.Command, error) {
 	c.Flags().AddFlagSet(app.Config.FlagSet)
 	if err := app.Config.BindPFlags(c.Flags()); err != nil {
 		return nil, errors.WithStack(err)
@@ -153,7 +153,6 @@ func (app *application) BindCobra(c *cobra.Command) (*cobra.Command, error) {
 		fmt.Println("example:", cmd.Example)
 		fmt.Println("commands:", cmd.Commands())
 		fmt.Println("runnable:", cmd.Runnable())
-
 
 		return nil
 	})

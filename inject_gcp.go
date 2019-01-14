@@ -12,7 +12,7 @@ import (
 	"gocloud.dev/mysql/cloudmysql"
 )
 
-func SetupGCP(ctx context.Context, cfg *Config) (*application, func(), error) {
+func SetupGCP(ctx context.Context, cfg *Config) (*Application, func(), error) {
 	wire.Build(
 		gcpcloud.GCP,
 		cloudmysql.Open,

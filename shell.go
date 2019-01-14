@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func (a *application) Run(args ...string) (stdout string, err error) {
+func (a *Application) Run(args ...string) (stdout string, err error) {
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(cmd.Env, os.Environ()...)

@@ -30,7 +30,7 @@ import (
 
 // Injectors from inject_gcp.go:
 
-func SetupGCP(ctx context.Context, cfg *Config) (*application, func(), error) {
+func SetupGCP(ctx context.Context, cfg *Config) (*Application, func(), error) {
 	stackdriverLogger := sdserver.NewRequestLogger()
 	roundTripper := gcp.DefaultTransport()
 	credentials, err := gcp.DefaultCredentials(ctx)
@@ -52,7 +52,7 @@ func SetupGCP(ctx context.Context, cfg *Config) (*application, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	v, cleanup := appHealthChecks(db)
+	v, cleanup := AppHealthChecks(db)
 	monitoredresourceInterface := monitoredresource.Autodetect()
 	exporter, cleanup2, err := sdserver.NewExporter(projectID, tokenSource, monitoredresourceInterface)
 	if err != nil {
@@ -101,8 +101,8 @@ func SetupGCP(ctx context.Context, cfg *Config) (*application, func(), error) {
 		return nil, nil, err
 	}
 	muxRouter := router.Inject()
-	commonApplication := newApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
-	return commonApplication, func() {
+	application := NewApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
+	return application, func() {
 		cleanup2()
 		cleanup()
 	}, nil
@@ -114,13 +114,13 @@ var (
 
 // Injectors from inject_local.go:
 
-func SetupLocal(ctx context.Context, cfg *Config) (*application, func(), error) {
+func SetupLocal(ctx context.Context, cfg *Config) (*Application, func(), error) {
 	logger := _wireLoggerValue
 	db, err := dialLocalSQL(cfg)
 	if err != nil {
 		return nil, nil, err
 	}
-	v, cleanup := appHealthChecks(db)
+	v, cleanup := AppHealthChecks(db)
 	exporter := _wireExporterValue
 	sampler := trace.AlwaysSample()
 	defaultDriver := _wireDefaultDriverValue
@@ -159,8 +159,8 @@ func SetupLocal(ctx context.Context, cfg *Config) (*application, func(), error) 
 		return nil, nil, err
 	}
 	muxRouter := router.Inject()
-	commonApplication := newApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
-	return commonApplication, func() {
+	application := NewApplication(serverServer, db, bucket, cfg, service, askService, renderService, logService, iioService, muxRouter)
+	return application, func() {
 		cleanup()
 	}, nil
 }

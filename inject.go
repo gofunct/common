@@ -20,10 +20,10 @@ import (
 	"gocloud.dev/server"
 )
 
-// newApplication creates a new application struct based on the backends and the message
+// newApplication creates a new Application struct based on the backends and the message
 // of the day variable.
-func newApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, config *Config, fs *fs.Service, q *ask.Service, r *render.Service, l *log.Service, i *iio.Service, rout *mux.Router) *application {
-	app := &application{
+func NewApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, config *Config, fs *fs.Service, q *ask.Service, r *render.Service, l *log.Service, i *iio.Service, rout *mux.Router) *Application {
+	app := &Application{
 		srv:      srv,
 		db:       db,
 		bucket:   bucket,
@@ -39,8 +39,8 @@ func newApplication(srv *server.Server, db *sql.DB, bucket *blob.Bucket, config 
 }
 
 var ApplicationSet = wire.NewSet(
-	newApplication,
-	appHealthChecks,
+	NewApplication,
+	AppHealthChecks,
 	trace.AlwaysSample,
 	CommonSet,
 )
@@ -67,7 +67,7 @@ func NewConfig(set *pflag.FlagSet) (*Config, error) {
 	return c, nil
 }
 
-func appHealthChecks(db *sql.DB) ([]health.Checker, func()) {
+func AppHealthChecks(db *sql.DB) ([]health.Checker, func()) {
 	dbCheck := sqlhealth.New(db)
 	list := []health.Checker{dbCheck}
 	return list, func() {

@@ -15,7 +15,7 @@ import (
 	"gocloud.dev/server"
 )
 
-func SetupLocal(ctx context.Context, cfg *Config) (*application, func(), error) {
+func SetupLocal(ctx context.Context, cfg *Config) (*Application, func(), error) {
 	wire.Build(
 		wire.InterfaceValue(new(requestlog.Logger), requestlog.Logger(nil)),
 		wire.InterfaceValue(new(trace.Exporter), trace.Exporter(nil)),
