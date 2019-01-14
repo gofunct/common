@@ -33,9 +33,6 @@ func NewConfig() (*Config, error) {
 	if s.Viper == nil {
 		s.Viper = viper.New()
 	}
-	if err := s.Viper.ReadInConfig(); err != nil {
-		return nil, errors.WithStack(err)
-	}
 
 	s.AutomaticEnv()
 
@@ -70,6 +67,10 @@ func NewConfig() (*Config, error) {
 	if err := s.Unmarshal(s); err != nil {
 		return nil, errors.WithStack(err)
 	}
+	if err := s.WriteConfig(); err != nil {
+		return s, errors.WithStack(err)
+	}
+
 
 	return s, nil
 }
