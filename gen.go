@@ -10,4 +10,4 @@
 //go:generate git commit -m "successful go generate(no docker)🐍"
 //go:generate git push origin master
 
-package mamba
+package common
