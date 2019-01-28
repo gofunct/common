@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Masterminds/sprig"
-	"github.com/gofunct/mamba/runtime/input"
 	"github.com/mitchellh/go-homedir"
 	"github.com/robfig/cron"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tcnksm/go-input"
 	"google.golang.org/grpc"
 	htemplate "html/template"
 	"io"
@@ -18,12 +18,10 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"path/filepath"
-	"text/template"
-
-	kitlog "github.com/go-kit/kit/log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"text/template"
 )
 
 func init() {
@@ -303,14 +301,6 @@ func WalkHtmlTmpl(path string, w io.Writer, object interface{}) InitFunc {
 		}); err != nil {
 			ERR(err)
 		}
-	}
-}
-
-func ReplaceLogger(writer io.Writer) InitFunc {
-	return func() {
-		logger := kitlog.NewJSONLogger(kitlog.NewSyncWriter(writer))
-		logger = kitlog.With(logger, "ts", kitlog.DefaultTimestampUTC, "caller", kitlog.DefaultCaller)
-		log.SetOutput(kitlog.NewStdlibAdapter(logger))
 	}
 }
 
