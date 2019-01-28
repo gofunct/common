@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"k8s.io/utils/exec"
+	"github.com/gofunct/common/pkg/exec"
 )
 
 // FakeExec is a simple scripted Interface type.

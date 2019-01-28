@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"k8s.io/utils/temp"
+	"github.com/gofunct/common/pkg/temp"
 )
 
 // FakeDir implements a Directory that is not backed on the

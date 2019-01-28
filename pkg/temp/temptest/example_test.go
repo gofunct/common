@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"k8s.io/utils/temp"
+	"github.com/gofunct/common/pkg/temp"
 )
 
 func TestedCode(dir temp.Directory) error {
