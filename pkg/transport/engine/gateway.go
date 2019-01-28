@@ -2,8 +2,8 @@ package engine
 
 import (
 	"context"
-	"github.com/gofunct/mamba/runtime/transport/api"
-	"github.com/gofunct/mamba/runtime/transport/config"
+	"github.com/gofunct/common/pkg/transport/api"
+	"github.com/gofunct/common/pkg/transport/config"
 	"net"
 	"net/http"
 	"time"

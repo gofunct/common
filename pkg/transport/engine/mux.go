@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/gofunct/mamba/runtime/transport/api"
+	"github.com/gofunct/common/pkg/transport/api"
 	"github.com/pkg/errors"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc/grpclog"

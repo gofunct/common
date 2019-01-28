@@ -1,10 +1,10 @@
 package engine
 
 import (
-	"github.com/gofunct/mamba/runtime/transport/config"
+	"github.com/gofunct/common/pkg/transport/config"
 	"net"
 
-	"github.com/gofunct/mamba/runtime/transport/api"
+	"github.com/gofunct/common/pkg/transport/api"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"

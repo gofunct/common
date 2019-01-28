@@ -2,8 +2,8 @@ package config
 
 import (
 	"crypto/tls"
-	"github.com/gofunct/mamba/runtime/transport/api"
-	"github.com/gofunct/mamba/runtime/transport/middleware"
+	"github.com/gofunct/common/pkg/transport/api"
+	"github.com/gofunct/common/pkg/transport/middleware"
 	"net"
 	"net/http"
 	"os"
