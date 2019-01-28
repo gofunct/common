@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gofunct/common/pkg/config"
-	"github.com/gofunct/common/pkg/logger"
+	"github.com/gofunct/common/pkg/logger/zap"
 )
 
 // render executes templates in service directory with configured data
@@ -53,7 +53,7 @@ func render(cfg *config.Config) error {
 				return fmt.Errorf("could not create file: %s", err)
 			}
 			defer func() {
-				logger.LogE("could not close file", f.Close())
+				zap.LogE("could not close file", f.Close())
 			}()
 
 			if err := tpl.Execute(f, cfg); err != nil {

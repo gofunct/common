@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/gofunct/common/pkg/logger"
+	"github.com/gofunct/common/pkg/logger/zap"
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
@@ -16,12 +16,12 @@ func init() {
 	Viper.AllowEmptyEnv(true)
 	Viper.SetDefault("json_logs", false)
 	Viper.SetDefault("loglevel", "debug")
-	logger.LogE("Write config if it doesnt exist", Viper.SafeWriteConfig())
+	zap.LogE("Write config if it doesnt exist", Viper.SafeWriteConfig())
 	Viper.AddConfigPath(os.Getenv("HOME" + filepath.Base(os.Getenv("PWD"))))
 	Viper.SetConfigType("yaml")
 	Viper.SetConfigName(".common")
-	logger.LogE("Read in config", Viper.ReadInConfig())
-	logger.LogE("Unmarshal Configuration variable from config file", Viper.Unmarshal(Configuration))
+	zap.LogE("Read in config", Viper.ReadInConfig())
+	zap.LogE("Unmarshal Configuration variable from config file", Viper.Unmarshal(Configuration))
 }
 
 var Configuration *Config

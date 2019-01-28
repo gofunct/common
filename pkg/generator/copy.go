@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"github.com/gofunct/common/pkg/logger"
+	"github.com/gofunct/common/pkg/logger/zap"
 	"io"
 	"os"
 	"path/filepath"
@@ -40,7 +40,7 @@ func copyFile(src, dst string, info os.FileInfo) error {
 		return fmt.Errorf("could not open source file: %s", err)
 	}
 	defer func() {
-		logger.LogE("could not close file", srcF.Close())
+		zap.LogE("could not close file", srcF.Close())
 	}()
 
 	dstF, err := os.Create(dst)
@@ -48,7 +48,7 @@ func copyFile(src, dst string, info os.FileInfo) error {
 		return fmt.Errorf("could not create destination file: %s", err)
 	}
 	defer func() {
-		logger.LogE("could not close file", dstF.Close())
+		zap.LogE("could not close file", dstF.Close())
 	}()
 
 	if _, err = io.Copy(dstF, srcF); err != nil {

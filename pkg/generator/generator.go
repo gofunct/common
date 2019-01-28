@@ -8,7 +8,7 @@ import (
 	"path"
 
 	"github.com/gofunct/common/pkg/config"
-	"github.com/gofunct/common/pkg/logger"
+	"github.com/gofunct/common/pkg/logger/zap"
 )
 
 // Run generator
@@ -22,73 +22,73 @@ func Run(cfg *config.Config) {
 	if cfg.Storage.Postgres {
 		cfg.Storage.Config.Driver = config.StoragePostgres
 	}
-	logger.LogF("Base templates", copyTemplates(
+	zap.LogF("Base templates", copyTemplates(
 		path.Join(cfg.Directories.Templates, config.Base),
 		cfg.Directories.Service,
 	))
 	if cfg.API.Enabled {
-		logger.LogF("Storage base templates", copyTemplates(
+		zap.LogF("Storage base templates", copyTemplates(
 			path.Join(cfg.Directories.Templates, config.API, config.Base),
 			cfg.Directories.Service,
 		))
 		if cfg.API.Gateway {
-			logger.LogF("Gateway templates for API", copyTemplates(
+			zap.LogF("Gateway templates for API", copyTemplates(
 				path.Join(cfg.Directories.Templates, config.API, config.APIGateway),
 				cfg.Directories.Service,
 			))
 		}
 	}
 	if cfg.Storage.Enabled {
-		logger.LogF("Storage base templates", copyTemplates(
+		zap.LogF("Storage base templates", copyTemplates(
 			path.Join(cfg.Directories.Templates, config.Storage, config.Base),
 			cfg.Directories.Service,
 		))
 		if cfg.Storage.Postgres {
-			logger.LogF("Storage templates for postgres", copyTemplates(
+			zap.LogF("Storage templates for postgres", copyTemplates(
 				path.Join(cfg.Directories.Templates, config.Storage, config.StoragePostgres),
 				cfg.Directories.Service,
 			))
 		}
 		if cfg.Storage.MySQL {
-			logger.LogF("Storage templates for mysql", copyTemplates(
+			zap.LogF("Storage templates for mysql", copyTemplates(
 				path.Join(cfg.Directories.Templates, config.Storage, config.StorageMySQL),
 				cfg.Directories.Service,
 			))
 		}
 	}
 	if cfg.API.Enabled && cfg.Storage.Enabled && cfg.Contract {
-		logger.LogF("Contract example templates", copyTemplates(
+		zap.LogF("Contract example templates", copyTemplates(
 			path.Join(cfg.Directories.Templates, config.Contract, config.Base),
 			cfg.Directories.Service,
 		))
 		if cfg.Storage.Postgres {
-			logger.LogF("Contract templates for postgres", copyTemplates(
+			zap.LogF("Contract templates for postgres", copyTemplates(
 				path.Join(cfg.Directories.Templates, config.Contract, config.StoragePostgres),
 				cfg.Directories.Service,
 			))
 		}
 		if cfg.Storage.MySQL {
-			logger.LogF("Contract templates for mysql", copyTemplates(
+			zap.LogF("Contract templates for mysql", copyTemplates(
 				path.Join(cfg.Directories.Templates, config.Contract, config.StorageMySQL),
 				cfg.Directories.Service,
 			))
 		}
 	}
-	logger.LogF("Render templates", render(cfg))
-	logger.LogF("Could not change directory", os.Chdir(cfg.Directories.Service))
+	zap.LogF("Render templates", render(cfg))
+	zap.LogF("Could not change directory", os.Chdir(cfg.Directories.Service))
 	if cfg.API.Enabled && cfg.Storage.Enabled && cfg.Contract {
 		log.Println("Prepare contracts:")
-		logger.LogF("Generate contracts", Exec("make", "contracts"))
+		zap.LogF("Generate contracts", Exec("make", "contracts"))
 	}
 	log.Println("Initialize vendors:")
-	logger.LogF("Init dep", Exec("dep", "init", "-skip-tools"))
-	logger.LogF("Tests", Exec("make", "check-all"))
+	zap.LogF("Init dep", Exec("dep", "init", "-skip-tools"))
+	zap.LogF("Tests", Exec("make", "check-all"))
 
 	if cfg.GitInit {
 		log.Println("Initialize Git repository:")
-		logger.LogF("Init git", Exec("git", "init"))
-		logger.LogF("Add repo files", Exec("git", "add", "--all"))
-		logger.LogF("Initial commit", Exec("git", "commit", "-m", "'Initial commit'"))
+		zap.LogF("Init git", Exec("git", "init"))
+		zap.LogF("Add repo files", Exec("git", "add", "--all"))
+		zap.LogF("Initial commit", Exec("git", "commit", "-m", "'Initial commit'"))
 	}
 	fmt.Printf("New repository was created, use command 'cd %s'", cfg.Directories.Service)
 }
