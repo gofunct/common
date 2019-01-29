@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go v0.34.0 // indirect
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
-	github.com/Masterminds/sprig v2.17.1+incompatible
+	github.com/Masterminds/sprig v2.17.1+incompatible // indirect
 	github.com/aokoli/goutils v1.1.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20190121005146-b04fd42d9952 // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
@@ -25,15 +25,15 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
-	github.com/mitchellh/go-homedir v1.1.0
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/pkg/errors v0.8.1
-	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967
+	github.com/robfig/cron v0.0.0-20180505203441-b41be1df6967 // indirect
 	github.com/soheilhy/cmux v0.1.4
 	github.com/spf13/afero v1.2.0
-	github.com/spf13/cobra v0.0.3
-	github.com/spf13/viper v1.3.1
+	github.com/spf13/cobra v0.0.3 // indirect
+	github.com/spf13/viper v1.3.1 // indirect
 	github.com/stretchr/testify v1.3.0
-	github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8
+	github.com/tcnksm/go-input v0.0.0-20180404061846-548a7d7a8ee8 // indirect
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1
