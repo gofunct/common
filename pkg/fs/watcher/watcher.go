@@ -1,17 +1,15 @@
-// Package watcher implements filesystem notification,.
 package watcher
 
 import (
 	//"fmt"
 
+	"github.com/gofunct/common/pkg/fs/watcher/fswatch"
+	"github.com/mgutz/str"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/gofunct/stencil/pkg/watcher/fswatch"
-	"github.com/mgutz/str"
 )
 
 const (

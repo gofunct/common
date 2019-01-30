@@ -1,12 +1,10 @@
 package fs
 
 import (
+	"github.com/gofunct/common/pkg/print"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/gofunct/stencil/pkg/glob"
-	"github.com/gofunct/stencil/pkg/print"
 )
 
 // FileExists determines if path exists
@@ -40,20 +38,20 @@ func FindUp(start, path string) string {
 //
 // If any go.html has changed then generate go files.
 func Outdated(srcGlobs, destGlobs []string) bool {
-	srcFiles, _, err := glob.Glob(srcGlobs)
+	srcFiles, _, err := Glob(srcGlobs)
 	if err != nil {
 		if strings.Contains(err.Error(), "no such file") {
 			return true
 		}
-		print.Error("stencil", "Outdated src error: %s", err.Error())
+		print.Error("common", "Outdated src error: %s", err.Error())
 		return true
 	}
-	destFiles, _, err := glob.Glob(destGlobs)
+	destFiles, _, err := Glob(destGlobs)
 	if err != nil {
 		if strings.Contains(err.Error(), "no such file") {
 			return true
 		}
-		print.Error("stencil", "Outdated dest error: %s", err.Error())
+		print.Error("common", "Outdated dest error: %s", err.Error())
 		return true
 	}
 

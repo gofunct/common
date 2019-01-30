@@ -4,15 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"github.com/gofunct/common/pkg/print"
+	"github.com/mgutz/str"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
-
-	"github.com/gofunct/stencil/pkg/print"
-	"github.com/mgutz/str"
 )
 
 // PackageName determines the package name from sourceFile if it is within $GOPATH
