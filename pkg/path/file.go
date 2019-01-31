@@ -28,14 +28,7 @@ var ErrInvalidLinkTreatment = errors.New("unknown link behavior")
 // more details.
 func Exists(linkBehavior LinkTreatment, filename string) (bool, error) {
 	var err error
-
-	if linkBehavior == CheckFollowSymlink {
-		_, err = os.Stat(filename)
-	} else if linkBehavior == CheckSymlinkOnly {
-		_, err = os.Lstat(filename)
-	} else {
-		return false, ErrInvalidLinkTreatment
-	}
+	_, err = os.Stat(filename)
 
 	if os.IsNotExist(err) {
 		return false, nil
